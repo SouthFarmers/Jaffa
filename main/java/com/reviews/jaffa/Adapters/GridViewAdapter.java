@@ -31,7 +31,6 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
 
     private Context mContext;
     private MainGridFragment.OnMainGridFragmentListener mListener;
-    private int layoutResourceId;
     private ArrayList<GridItem> mGridData = new ArrayList<GridItem>();
     private List<String> title, rating,director, movieID, mImage, mDirector, releaseDate;
     TextView movie_title,movie_id, movie_director;

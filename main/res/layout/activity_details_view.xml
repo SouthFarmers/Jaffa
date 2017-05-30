@@ -5,7 +5,6 @@
     android:orientation="vertical">
 
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -45,7 +44,7 @@
                 android:id="@+id/movie_rating_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
@@ -58,7 +57,7 @@
                 android:id="@+id/movie_detail_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="22dp"
                 android:layout_toEndOf="@+id/movie_rating_label"
                 android:layout_toRightOf="@+id/movie_rating_label"
@@ -71,7 +70,7 @@
                 android:id="@+id/movie_detail_releasedate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
@@ -98,7 +97,7 @@
                 android:id="@+id/movie_detail_director_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
@@ -125,7 +124,7 @@
                 android:id="@+id/movie_detail_mdirector_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
@@ -176,10 +175,17 @@
                 android:textColor="@color/colorRed"
                 android:textStyle="bold" />
 
+            <ListView
+                android:id="@+id/friends_review_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/label_friends_rating"/>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_below="@+id/label_friends_rating"
+                android:id="@+id/view_friends_rating"
+                android:layout_below="@+id/friends_review_list"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
@@ -205,10 +211,17 @@
                 android:textColor="@color/colorRed"
                 android:textStyle="bold" />
 
+            <ListView
+                android:id="@+id/critic_review_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/label_critics_you_follow"/>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_below="@+id/label_critics_you_follow"
+                android:id="@+id/view_critics_you_follow"
+                android:layout_below="@+id/critic_review_list"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
@@ -217,5 +230,6 @@
         </RelativeLayout>
 
     </RelativeLayout>
+
 
 </FrameLayout>

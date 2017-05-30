@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -38,7 +37,6 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     private OnMainGridFragmentListener mListener;
     static GridViewAdapter mainadapter;
     static RecyclerView recyclerView;
-    ProgressBar progressBar;
     private static List<String> listMovieTitle, listMovieRating, listMovieDirector, listMovieID, ListMovieImage, ListMovieMusicDirector, ListMovieReleaseDate, ListMovieReviews, ListMovieInfo;
 
     public static MainGridFragment newInstance() {
@@ -95,11 +93,10 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.mainlist_fragment, container, false);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.main_list);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
-        progressBar.setVisibility(View.VISIBLE);
+
        allMoviesvolley();
         return rootView;
     }
@@ -145,12 +142,10 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
                                 mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating,listMovieDirector, listMovieID, ListMovieImage, ListMovieMusicDirector, ListMovieReleaseDate);
                                 recyclerView.setAdapter(mainadapter);
-                            progressBar.setVisibility(View.GONE);
 
                         } catch (JSONException e) {
 
                             e.printStackTrace();
-                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -158,7 +153,6 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        progressBar.setVisibility(View.GONE);
                     }
                 });
 

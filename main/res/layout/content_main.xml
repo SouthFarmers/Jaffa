@@ -11,14 +11,18 @@
     tools:showIn="@layout/app_bar_main">
 
     <FrameLayout
-        android:id="@+id/mainlist_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:id="@+id/mainlist_fragment"></FrameLayout>
 
 
 
-    </FrameLayout>
-
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
 </LinearLayout>

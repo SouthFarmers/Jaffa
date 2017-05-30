@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -31,6 +32,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.reviews.jaffa.Adapters.CriticReviewsAdapter;
+import com.reviews.jaffa.Adapters.FriendReviewsAdapter;
 import com.reviews.jaffa.MainActivity;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.Volley.VolleySingleton;
@@ -59,8 +62,11 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     private OnMovieDetailFragmentListener mListener;
     TextView movie_name,movie_director,movie_rating, movie_releasedate, movie_musicdirector, movie_title;
     ImageView movie_img;
-    private static List<String> listReviews_fbId,listReviews_rating, listReviews_revtext,listReviews_friend,listReviews_critic;
+    private static List<String> listRevfrnd_fbId,listRevfrnd_rating, listRevfrnd_revtext,listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext;
     CollapsingToolbarLayout collap;
+    ListView frndrevlistView, criticrevlistview;
+    static FriendReviewsAdapter frndsrevadapter;
+    static CriticReviewsAdapter criticrevadapter;
 
     public MovieDetailFragment() {
     }
@@ -93,6 +99,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_rating = (TextView) view.findViewById(R.id.movie_detail_rating);
         movie_releasedate = (TextView) view.findViewById(R.id.movie_detail_releasedate);
         movie_musicdirector = (TextView) view.findViewById(R.id.movie_detail_mdirector);
+        frndrevlistView=(ListView)view.findViewById(R.id.friends_review_list);
+        criticrevlistview=(ListView)view.findViewById(R.id.critic_review_list);
 
         return view;
     }
@@ -117,7 +125,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-       // ((MainActivity) getActivity()).getToolbar().setTitle(movieName);
+        // ((MainActivity) getActivity()).getToolbar().setTitle(movieName);
     }
 
     public interface OnMovieDetailFragmentListener {
@@ -134,11 +142,14 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                         System.out.print(response);
                         // the response is already constructed as a JSONObject!
                         try {
-                            listReviews_fbId = new ArrayList<String>();
-                            listReviews_rating = new ArrayList<String>();
-                            listReviews_revtext = new ArrayList<String>();
-                            listReviews_friend = new ArrayList<String>();
-                            listReviews_critic = new ArrayList<String>();
+                            listRevfrnd_fbId = new ArrayList<String>();
+                            listRevfrnd_rating = new ArrayList<String>();
+                            listRevfrnd_revtext = new ArrayList<String>();
+
+                            listRevcritic_fbId = new ArrayList<String>();
+                            listRevcritic_rating = new ArrayList<String>();
+                            listRevcritic_revtext = new ArrayList<String>();
+
                             if (response.has("Movie")) {
                                 JSONObject responseObject = response.getJSONObject("Movie");
 
@@ -153,13 +164,23 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                     JSONArray jsonArray = responseObject.getJSONArray("Reviews");
 
                                     for (int i = 0; i < jsonArray.length(); i++) {
-                                        listReviews_fbId.add(i, (jsonArray.getJSONObject(i).optString("FbID")));
-                                        listReviews_rating.add(i, (jsonArray.getJSONObject(i).optString("MovieRating")));
-                                        listReviews_revtext.add(i, (jsonArray.getJSONObject(i).optString("MovieReview")));
-                                        listReviews_critic.add(i, (jsonArray.getJSONObject(i).optString("IsCritic")));
-                                        listReviews_friend.add(i, (jsonArray.getJSONObject(i).optString("IsFriend")));
+                                        if(jsonArray.getJSONObject(i).optString("IsFriend").equalsIgnoreCase("true")){
+                                            listRevfrnd_fbId.add(i, (jsonArray.getJSONObject(i).optString("FbID")));
+                                            listRevfrnd_rating.add(i, (jsonArray.getJSONObject(i).optString("MovieRating")));
+                                            listRevfrnd_revtext.add(i, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                        }else{
+                                            listRevcritic_fbId.add(i, (jsonArray.getJSONObject(i).optString("FbID")));
+                                            listRevcritic_rating.add(i, (jsonArray.getJSONObject(i).optString("MovieRating")));
+                                            listRevcritic_revtext.add(i, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                        }
                                     }
                                 }
+
+                                frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext);
+                                frndrevlistView.setAdapter(frndsrevadapter);
+
+                                criticrevadapter = new CriticReviewsAdapter(getActivity(), listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext);
+                                criticrevlistview.setAdapter(criticrevadapter);
 
 
                                 setMovieValues();
