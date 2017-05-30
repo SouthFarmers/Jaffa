@@ -23,7 +23,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +69,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     ListView frndrevlistView, criticrevlistview;
     static FriendReviewsAdapter frndsrevadapter;
     static CriticReviewsAdapter criticrevadapter;
+    ProgressBar progressBar;
 
     public MovieDetailFragment() {
     }
@@ -93,6 +96,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_details_view, container, false);
+        progressBar = (ProgressBar) view.findViewById(R.id.detail_progressBar);
         movie_img = (ImageView) view.findViewById(R.id.detail_thumbnail);
         movie_title = (TextView) view.findViewById(R.id.movie_title_label);
         movie_director = (TextView) view.findViewById(R.id.movie_detail_director);
@@ -101,7 +105,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_musicdirector = (TextView) view.findViewById(R.id.movie_detail_mdirector);
         frndrevlistView=(ListView)view.findViewById(R.id.friends_review_list);
         criticrevlistview=(ListView)view.findViewById(R.id.critic_review_list);
-
+        progressBar.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -133,8 +137,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     }
 
     public void moviedetailsvolley(){
-        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
-
+        //String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
+ String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=1468306842,715741731";
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
@@ -176,7 +180,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                     }
                                 }
 
-                                frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext);
+                                frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext, progressBar);
                                 frndrevlistView.setAdapter(frndsrevadapter);
 
                                 criticrevadapter = new CriticReviewsAdapter(getActivity(), listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext);
@@ -188,6 +192,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
 
@@ -196,6 +201,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
 
@@ -236,7 +242,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_releasedate.setText(setDate(movieReleaseDate));
         movie_director.setText(movieDirector);
         movie_musicdirector.setText(movieMusicDirector);
-        movie_rating.setText(movieRating+"/100");
+        movie_rating.setText(movieRating+" %");
     }
 
 

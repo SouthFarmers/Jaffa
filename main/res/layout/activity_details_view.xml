@@ -4,10 +4,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!--<ProgressBar-->
+        <!--android:id="@+id/detail_progressBar"-->
+        <!--style="?android:attr/progressBarStyle"-->
+        <!--android:layout_width="150dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="center"/>-->
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/detail_main_layout">
+
+
 
         <TextView
             android:id="@+id/movie_title_label"
@@ -16,8 +29,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="23dp"
-            android:gravity="center_horizontal"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="5dp"
             android:text="Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="#666"
@@ -40,37 +53,48 @@
                 android:src="@drawable/agadu"
                 android:scaleType="fitCenter" />
 
+            <ImageView
+                android:id="@+id/movie_rating_heart"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@+id/detail_thumbnail"
+                android:layout_toRightOf="@+id/detail_thumbnail"
+                android:src="@drawable/heart"/>
+
             <TextView
                 android:id="@+id/movie_rating_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="20dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
                 android:text="Rating : "
                 android:textColor="#666"
                 android:textSize="18sp"
+                android:visibility="invisible"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
             <TextView
                 android:id="@+id/movie_detail_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="22dp"
                 android:layout_toEndOf="@+id/movie_rating_label"
                 android:layout_toRightOf="@+id/movie_rating_label"
                 android:ellipsize="marquee"
                 android:text="85"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/movie_detail_releasedate_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
@@ -97,7 +121,7 @@
                 android:id="@+id/movie_detail_director_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
@@ -124,7 +148,7 @@
                 android:id="@+id/movie_detail_mdirector_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/detail_thumbnail"
                 android:layout_toRightOf="@+id/detail_thumbnail"
@@ -153,6 +177,7 @@
                 android:layout_below="@+id/detail_thumbnail"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginTop="4dp"
                 android:background="@android:color/darker_gray" />
 
         </RelativeLayout>
@@ -174,6 +199,7 @@
                 android:textSize="22sp"
                 android:textColor="@color/colorRed"
                 android:textStyle="bold" />
+
 
             <ListView
                 android:id="@+id/friends_review_list"
@@ -230,6 +256,6 @@
         </RelativeLayout>
 
     </RelativeLayout>
-
+</LinearLayout>
 
 </FrameLayout>
