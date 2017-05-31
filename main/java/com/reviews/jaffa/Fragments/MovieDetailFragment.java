@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,11 +15,18 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.RotateAnimation;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -29,11 +37,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.reviews.jaffa.Adapters.CriticReviewsAdapter;
 import com.reviews.jaffa.Adapters.FriendReviewsAdapter;
 import com.reviews.jaffa.MainActivity;
@@ -49,8 +61,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,16 +74,16 @@ import java.util.concurrent.TimeUnit;
 public class MovieDetailFragment extends Fragment implements View.OnClickListener  {
 
     private static final String movie_NAME = "prop_name";
-    private String movieName, movieDirector,movieRating,movieReleaseDate,movieMusicDirector,movieImage;
+    private String movieName, movieDirector,movieRating,movieReleaseDate,movieMusicDirector,movieImage, movieID;
     private OnMovieDetailFragmentListener mListener;
     TextView movie_name,movie_director,movie_rating, movie_releasedate, movie_musicdirector, movie_title;
     ImageView movie_img;
     private static List<String> listRevfrnd_fbId,listRevfrnd_rating, listRevfrnd_revtext,listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext;
-    CollapsingToolbarLayout collap;
     ListView frndrevlistView, criticrevlistview;
     static FriendReviewsAdapter frndsrevadapter;
     static CriticReviewsAdapter criticrevadapter;
     ProgressBar progressBar;
+    View view;
 
     public MovieDetailFragment() {
     }
@@ -85,6 +99,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             movieName = getArguments().getString(movie_NAME);
         }
@@ -95,7 +110,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_details_view, container, false);
+        view = inflater.inflate(R.layout.activity_details_view, container, false);
         progressBar = (ProgressBar) view.findViewById(R.id.detail_progressBar);
         movie_img = (ImageView) view.findViewById(R.id.detail_thumbnail);
         movie_title = (TextView) view.findViewById(R.id.movie_title_label);
@@ -113,6 +128,49 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mListener.enableCollapse();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(
+            Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_add_review, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.add_review:
+                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
+                View mView = layoutInflaterAndroid.inflate(R.layout.add_review, null);
+                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(getActivity());
+                alertDialogBuilderUserInput.setView(mView);
+
+                final EditText addreviewText = (EditText) mView.findViewById(R.id.add_review_text);
+                final RatingBar addreviewRating = (RatingBar) mView.findViewById(R.id.add_review_rating);
+                alertDialogBuilderUserInput
+                        .setCancelable(false)
+                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                // ToDo get user input here
+                                AddReview(addreviewText.getText().toString(), movieID, "1448463301", String.valueOf(addreviewRating.getRating()));
+
+                            }
+                        })
+
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialogBox, int id) {
+                                        dialogBox.cancel();
+                                    }
+                                });
+
+                AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+                alertDialogAndroid.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -157,6 +215,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                             if (response.has("Movie")) {
                                 JSONObject responseObject = response.getJSONObject("Movie");
 
+                                movieID = responseObject.optString("MovieID");
                                 movieName = responseObject.optString("MovieName");
                                 movieDirector = responseObject.optString("Director");
                                 movieRating = responseObject.optString("AvgRating");
@@ -253,5 +312,43 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(Long.parseLong(millisecond));
         return sdf.format(calendar.getTime());
+    }
+
+
+    public void AddReview(final String text, final String movieID, final String FbID, final String rating){
+
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        StringRequest sr = new StringRequest(Request.Method.POST,"http://jaffareviews.com/api/movie/AddRating", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(getActivity(), "Review Added!",
+                        Toast.LENGTH_LONG).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError e) {
+                e.printStackTrace();
+            }
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("MovieID",movieID);
+                params.put("Rating",rating);
+                params.put("Review", text);
+                params.put("FbID",FbID);
+
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+        queue.add(sr);
+
     }
 }

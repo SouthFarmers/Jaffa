@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.reviews.jaffa.Adapters.GridViewAdapter;
 import com.reviews.jaffa.Fragments.MainGridFragment;
 import com.reviews.jaffa.Fragments.MovieDetailFragment;
+import com.reviews.jaffa.Fragments.UserProfileFragment;
 import com.reviews.jaffa.POJO.GridItem;
 import com.reviews.jaffa.POJO.ImageItem;
 
@@ -51,7 +52,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         MainGridFragment.OnMainGridFragmentListener,
-        MovieDetailFragment.OnMovieDetailFragmentListener {
+        MovieDetailFragment.OnMovieDetailFragmentListener,
+        UserProfileFragment.OnUserprofileFragmentListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private Toolbar toolbar;
@@ -112,6 +114,13 @@ public class MainActivity extends AppCompatActivity
         ft.commit();
     }
 
+    private void launchUserProfileFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainlist_fragment, UserProfileFragment.newInstance());
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -149,7 +158,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_login) {
+        if (id == R.id.nav_profile) {
+            launchUserProfileFragment();
         } else if (id == R.id.nav_manage) {
 
         }  else if (id == R.id.nav_share) {
