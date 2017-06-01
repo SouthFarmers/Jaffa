@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -66,6 +68,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by GauthamVejandla on 4/9/17.
@@ -141,32 +145,62 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         // handle item selection
         switch (item.getItemId()) {
             case R.id.add_review:
-                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
-                View mView = layoutInflaterAndroid.inflate(R.layout.add_review, null);
-                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(getActivity());
-                alertDialogBuilderUserInput.setView(mView);
 
-                final EditText addreviewText = (EditText) mView.findViewById(R.id.add_review_text);
-                final RatingBar addreviewRating = (RatingBar) mView.findViewById(R.id.add_review_rating);
-                alertDialogBuilderUserInput
-                        .setCancelable(false)
-                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogBox, int id) {
-                                // ToDo get user input here
-                                AddReview(addreviewText.getText().toString(), movieID, "1448463301", String.valueOf(addreviewRating.getRating()));
+                SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
+                final String restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
+                if (restoreduserid != null) {
+                    LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
+                    View mView = layoutInflaterAndroid.inflate(R.layout.add_review, null);
+                    AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(getActivity());
+                    alertDialogBuilderUserInput.setView(mView);
 
-                            }
-                        })
+                    final EditText addreviewText = (EditText) mView.findViewById(R.id.add_review_text);
+                    final RatingBar addreviewRating = (RatingBar) mView.findViewById(R.id.add_review_rating);
+                    alertDialogBuilderUserInput
+                            .setCancelable(false)
+                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialogBox, int id) {
+                                    // ToDo get user input here
+                                    AddReview(addreviewText.getText().toString(), Integer.parseInt(movieID), Integer.parseInt(restoreduserid), addreviewRating.getRating());
 
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialogBox, int id) {
-                                        dialogBox.cancel();
-                                    }
-                                });
+                                }
+                            })
 
-                AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-                alertDialogAndroid.show();
+                            .setNegativeButton("Cancel",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialogBox, int id) {
+                                            dialogBox.cancel();
+                                        }
+                                    });
+
+                    AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+                    alertDialogAndroid.show();
+                }else{
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                    builder1.setMessage("Login to add review.");
+                    builder1.setCancelable(true);
+                    builder1.setPositiveButton(
+                            "Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                                    ft.replace(R.id.mainlist_fragment, UserProfileFragment.newInstance());
+                                    ft.addToBackStack(null);
+                                    ft.commit();
+                                }
+                            });
+                    builder1.setNegativeButton(
+                            "Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+                }
+
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -195,8 +229,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     }
 
     public void moviedetailsvolley(){
-        //String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
- String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=1468306842,715741731";
+        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
+ //String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=1468306842,715741731";
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
@@ -314,41 +348,42 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         return sdf.format(calendar.getTime());
     }
 
+    public void AddReview(final String text, final int movieID, final int FbID, final float rating){
 
-    public void AddReview(final String text, final String movieID, final String FbID, final String rating){
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
 
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        StringRequest sr = new StringRequest(Request.Method.POST,"http://jaffareviews.com/api/movie/AddRating", new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(getActivity(), "Review Added!",
-                        Toast.LENGTH_LONG).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError e) {
-                e.printStackTrace();
-            }
-        }){
-            @Override
-            protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("MovieID",movieID);
-                params.put("Rating",rating);
-                params.put("Review", text);
-                params.put("FbID",FbID);
+        try{
+            jsonObject.put("MovieID",movieID);
+            jsonObject.put("Rating",rating);
+            jsonObject.put("Review", text);
+            jsonObject.put("FbID",FbID);
+            jsonArray.put(jsonObject);
 
-                return params;
-            }
+        }catch(Exception e){
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/x-www-form-urlencoded");
-                return params;
-            }
-        };
-        queue.add(sr);
+        }
 
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://jaffareviews.com/api/movie/AddRating", jsonObject,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        moviedetailsvolley();
+                        try {
+                            JSONArray arrData = response.getJSONArray("data");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Error.Response", error.toString());
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(jsonObjectRequest);
     }
 }

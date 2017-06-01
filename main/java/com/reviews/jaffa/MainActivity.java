@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.reviews.jaffa.Adapters.GridViewAdapter;
 import com.reviews.jaffa.Fragments.MainGridFragment;
 import com.reviews.jaffa.Fragments.MovieDetailFragment;
+import com.reviews.jaffa.Fragments.SocialShareFragment;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
 import com.reviews.jaffa.POJO.GridItem;
 import com.reviews.jaffa.POJO.ImageItem;
@@ -53,7 +54,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         MainGridFragment.OnMainGridFragmentListener,
         MovieDetailFragment.OnMovieDetailFragmentListener,
-        UserProfileFragment.OnUserprofileFragmentListener{
+        UserProfileFragment.OnUserprofileFragmentListener,
+        SocialShareFragment.OnSocialShareFragmentListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private Toolbar toolbar;
@@ -95,7 +97,6 @@ public class MainActivity extends AppCompatActivity
         launchPropertyDetailFragment(title);
     }
 
-
     public void disableCollapse() {}
 
     public void enableCollapse() {}
@@ -120,6 +121,13 @@ public class MainActivity extends AppCompatActivity
         ft.addToBackStack(null);
         ft.commit();
     }
+
+    private void launchSocailSharingFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainlist_fragment, SocialShareFragment.newInstance());
+        ft.addToBackStack(null);
+        ft.commit();
+        }
 
     @Override
     public void onBackPressed() {
@@ -163,9 +171,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
 
         }  else if (id == R.id.nav_share) {
-
+            launchSocailSharingFragment();
         } else if (id == R.id.nav_send) {
-
+            Toast.makeText(this, "This is will be redirected to android play store!",
+                    Toast.LENGTH_LONG).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
