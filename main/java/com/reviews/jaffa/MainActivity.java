@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         launchMainGridFragment();
+
     }
 
 

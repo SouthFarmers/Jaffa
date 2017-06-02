@@ -25,6 +25,7 @@
         <string name="app_id">355198514515820</string>
         <string name="exception">Exception: %1$s</string>
     <string name="shared_pref_FbID">UserFbID</string>
+    <string name="shared_pref_username">Username</string>
 
 
     <string-array name="image_ids">

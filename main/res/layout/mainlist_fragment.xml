@@ -10,9 +10,13 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"/>
 
+    <com.cleveroad.pulltorefresh.firework.FireworkyPullToRefreshLayout
+        android:id="@+id/pullToRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/main_list"></android.support.v7.widget.RecyclerView>
-
+        android:id="@+id/main_list"/>
+    </com.cleveroad.pulltorefresh.firework.FireworkyPullToRefreshLayout>
 </LinearLayout>

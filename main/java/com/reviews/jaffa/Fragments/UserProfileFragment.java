@@ -101,7 +101,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             mListener = (OnUserprofileFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnCheeseCategoriesFragmentListener");
+                    + " must implement UserProfileFragmentFragmentListener");
         }
     }
 
