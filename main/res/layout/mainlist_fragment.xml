@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
-    android:id="@+id/main_progressBar"
-    style="?android:attr/progressBarStyle"
-    android:layout_width="150dp"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"/>
+
+
+    <com.mingle.widget.LoadingView
+        android:id="@+id/main_progress"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        app:loadingText="Loading..." />
 
     <com.cleveroad.pulltorefresh.firework.FireworkyPullToRefreshLayout
         android:id="@+id/pullToRefresh"

@@ -34,6 +34,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.mingle.widget.LoadingView;
 import com.reviews.jaffa.Helpers.ImageHelper;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.SplashActivity;
@@ -61,7 +62,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private String firstName,lastName, userId, fullName;
     private URL profilePicture;
     private String TAG = "LoginActivity";
-    ProgressBar pgbar;
+    LoadingView userProgress;
 
 
 
@@ -135,8 +136,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
         profilePicImageView = (ImageView) rootView.findViewById(R.id.profilePicture);
         greeting = (TextView) rootView.findViewById(R.id.greeting);
-        pgbar = (ProgressBar)  rootView.findViewById(R.id.user_progressbar);
-        pgbar.setVisibility(View.VISIBLE);
+        userProgress = (LoadingView) rootView.findViewById(R.id.user_progress);
 
         SharedPreferences sharedPrefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
         if(sharedPrefs.contains(getString(R.string.shared_pref_FbID))){
@@ -183,7 +183,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         if (userId != null) {
             new LoadProfileImage(profilePicImageView).execute("https://graph.facebook.com/" + userId + "/picture?width=500&height=500");
             greeting.setText(fullName);
-            pgbar.setVisibility(View.GONE);
+            userProgress.setVisibility(View.GONE);
         } else {
             Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.ic_launcher);
             profilePicImageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(getContext(), icon, 200, 200, 200, false, false, false, false));

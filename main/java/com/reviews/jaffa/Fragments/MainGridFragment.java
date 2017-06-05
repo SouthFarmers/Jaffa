@@ -18,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.cleveroad.pulltorefresh.firework.FireworkyPullToRefreshLayout;
+import com.mingle.widget.LoadingView;
 import com.reviews.jaffa.Adapters.GridViewAdapter;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.Volley.VolleySingleton;
@@ -41,7 +42,8 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     private boolean mIsRefreshing;
     static GridViewAdapter mainadapter;
     static RecyclerView recyclerView;
-    ProgressBar progressBar;
+    //ProgressBar progressBar;
+    LoadingView progress;
     FireworkyPullToRefreshLayout mPullToRefresh;
     private static List<String> listMovieTitle, listMovieRating, listMovieDirector, listMovieID, ListMovieImage, ListMovieMusicDirector, ListMovieReleaseDate, ListMovieReviews, ListMovieInfo;
 
@@ -99,12 +101,13 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.mainlist_fragment, container, false);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.main_progressBar);
+        progress = (LoadingView) rootView.findViewById(R.id.main_progress);
+        //progressBar = (ProgressBar) rootView.findViewById(R.id.main_progressBar);
         mPullToRefresh = (FireworkyPullToRefreshLayout) rootView.findViewById(R.id.pullToRefresh);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.main_list);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
-        progressBar.setVisibility(View.VISIBLE);
+        //progressBar.setVisibility(View.VISIBLE);
 
        allMoviesvolley();
         return rootView;
@@ -165,13 +168,15 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
                                 mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating,listMovieDirector, listMovieID, ListMovieImage, ListMovieMusicDirector, ListMovieReleaseDate);
                                 recyclerView.setAdapter(mainadapter);
-                            progressBar.setVisibility(View.GONE);
+                            //progressBar.setVisibility(View.GONE);
+                            progress.setVisibility(View.GONE);
                             mPullToRefresh.setRefreshing(mIsRefreshing = false);
 
                         } catch (JSONException e) {
 
                             e.printStackTrace();
-                            progressBar.setVisibility(View.GONE);
+//                            progressBar.setVisibility(View.GONE);
+                            progress.setVisibility(View.GONE);
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -179,7 +184,8 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        progressBar.setVisibility(View.GONE);
+//                        progressBar.setVisibility(View.GONE);
+                        progress.setVisibility(View.GONE);
                     }
                 });
 

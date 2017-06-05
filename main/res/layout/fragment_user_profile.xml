@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#FFF">
 
-    <ProgressBar
-        android:layout_width="match_parent"
+    <com.mingle.widget.LoadingView
+        android:id="@+id/user_progress"
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:id="@+id/user_progressbar"/>
+        app:loadingText="Loading..."/>
 
     <LinearLayout
         android:layout_width="300dp"

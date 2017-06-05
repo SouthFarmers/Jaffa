@@ -1,5 +1,7 @@
 package com.reviews.jaffa;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,8 +15,11 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
@@ -31,6 +36,7 @@ import com.facebook.GraphResponse;
 import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.github.glomadrian.roadrunner.DeterminateRoadRunner;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
 
 import org.json.JSONException;
@@ -40,6 +46,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.security.AccessController.getContext;
 
 /**
  * Created by gautham on 6/2/17.
@@ -57,6 +65,12 @@ public class SplashActivity extends AhoyOnboarderActivity {
     private String hasSeenTutorial = "hasseentutorial";
     private final int SPLASH_DISPLAY_LENGTH = 3000;
 
+    DeterminateRoadRunner determinateLoadingPath;
+    ImageView textImage;
+    private ValueAnimator progressAnimator;
+    private FinishLoadingListener finishLoadingListener;
+    private Animation textAnimation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,18 +83,59 @@ public class SplashActivity extends AhoyOnboarderActivity {
             if(sharedPrefs.getBoolean(hasSeenTutorial, false)){
 
                 setContentView(R.layout.activity_splash);
+                determinateLoadingPath = (DeterminateRoadRunner) findViewById(R.id.determinate);
+                textImage = (ImageView) findViewById(R.id.text_image);
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                textAnimation = AnimationUtils.loadAnimation(this, R.anim.text);
+                textAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override public void onAnimationStart(Animation animation) {
+                        //Empty
+                    }
 
+                    @Override public void onAnimationEnd(Animation animation) {
+                        if (finishLoadingListener != null) {
+                            finishLoadingListener.onLoadingFinish();
+                        }
+                    }
+
+                    @Override public void onAnimationRepeat(Animation animation) {
+                        //Empty
+                    }
+                });
+
+                progressAnimator = ValueAnimator.ofInt(0, 1000).setDuration(4000);
+                progressAnimator.setStartDelay(2000);
+                progressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override public void onAnimationUpdate(ValueAnimator animation) {
+                        int value = (Integer) animation.getAnimatedValue();
+                        determinateLoadingPath.setValue(value);
+                    }
+                });
+
+                progressAnimator.addListener(new Animator.AnimatorListener() {
+                    @Override public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override public void onAnimationEnd(Animator animation) {
+                        determinateLoadingPath.stop();
+                        textImage.startAnimation(textAnimation);
+                        textImage.setVisibility(View.VISIBLE);
                         if(isLoggedIn()){
                             startActivity(intent);
                         }else{
                             tryLogin();
                         }
                     }
-                }, SPLASH_DISPLAY_LENGTH);
+
+                    @Override public void onAnimationCancel(Animator animation) {
+                        //Empty
+                    }
+
+                    @Override public void onAnimationRepeat(Animator animation) {
+                        //Empty
+                    }
+                });
+                progressAnimator.start();
 
             }else{
                 AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Movie Reviews", "View reviews for all new releases.", R.drawable.backpack);
@@ -204,5 +259,15 @@ public class SplashActivity extends AhoyOnboarderActivity {
     public boolean isLoggedIn() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
+    }
+
+
+    public void setFinishLoadingListener(
+            FinishLoadingListener finishLoadingListener) {
+        this.finishLoadingListener = finishLoadingListener;
+    }
+
+    public interface FinishLoadingListener {
+        void onLoadingFinish();
     }
 }

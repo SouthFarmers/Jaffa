@@ -48,6 +48,7 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.mingle.widget.LoadingView;
 import com.reviews.jaffa.Adapters.CriticReviewsAdapter;
 import com.reviews.jaffa.Adapters.FriendReviewsAdapter;
 import com.reviews.jaffa.MainActivity;
@@ -86,7 +87,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     ListView frndrevlistView, criticrevlistview;
     static FriendReviewsAdapter frndsrevadapter;
     static CriticReviewsAdapter criticrevadapter;
-    ProgressBar progressBar;
+    LoadingView detailProgress;
     View view;
 
     public MovieDetailFragment() {
@@ -115,7 +116,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.activity_details_view, container, false);
-        progressBar = (ProgressBar) view.findViewById(R.id.detail_progressBar);
+        detailProgress = (LoadingView) view.findViewById(R.id.detail_progress);
         movie_img = (ImageView) view.findViewById(R.id.detail_thumbnail);
         movie_title = (TextView) view.findViewById(R.id.movie_title_label);
         movie_director = (TextView) view.findViewById(R.id.movie_detail_director);
@@ -124,7 +125,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_musicdirector = (TextView) view.findViewById(R.id.movie_detail_mdirector);
         frndrevlistView=(ListView)view.findViewById(R.id.friends_review_list);
         criticrevlistview=(ListView)view.findViewById(R.id.critic_review_list);
-        progressBar.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -273,7 +273,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                     }
                                 }
 
-                                frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext, progressBar);
+                                frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext, detailProgress);
                                 frndrevlistView.setAdapter(frndsrevadapter);
 
                                 criticrevadapter = new CriticReviewsAdapter(getActivity(), listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext);
@@ -285,7 +285,9 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            progressBar.setVisibility(View.GONE);
+                            detailProgress.setVisibility(View.GONE);
+                            Toast.makeText(getActivity(), "Something went wrong!",
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -294,7 +296,9 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-                        progressBar.setVisibility(View.GONE);
+                        detailProgress.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(), "Something went wrong!",
+                                Toast.LENGTH_LONG).show();
                     }
                 });
 
