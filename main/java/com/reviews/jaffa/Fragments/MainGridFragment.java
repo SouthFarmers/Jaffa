@@ -193,12 +193,6 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
             public void onRefresh() {
                 mIsRefreshing = true;
                 allMoviesvolley();
-//                mPullToRefresh.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mPullToRefresh.setRefreshing(mIsRefreshing = false);
-//                    }
-//                }, REFRESH_DELAY);
             }
         });
     }

@@ -301,8 +301,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         VolleySingleton.getInstance().addToRequestQueue(jsonRequest);
     }
 
-
-
     public void setImage(String url){
         Log.d("",url);
         ImageRequest imgRequest = new ImageRequest(url,
@@ -320,8 +318,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         });
         VolleySingleton.getInstance().addToRequestQueue(imgRequest);
     }
-
-
 
     @Override
     public void onClick(View v) {

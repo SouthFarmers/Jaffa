@@ -19,8 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -33,6 +36,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.reviews.jaffa.Helpers.ImageHelper;
 import com.reviews.jaffa.R;
+import com.reviews.jaffa.SplashActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,11 +57,11 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     private ImageView profilePicImageView;
     private TextView greeting;
     private CallbackManager callbackManager;
-    private LoginButton loginButton;
-    private String firstName,lastName;
+    private LoginButton logoutButton;
+    private String firstName,lastName, userId, fullName;
     private URL profilePicture;
-    private String userId;
     private String TAG = "LoginActivity";
+    ProgressBar pgbar;
 
 
 
@@ -121,13 +125,27 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                              ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_user_profile, container, false);
-        loginButton = (LoginButton) rootView.findViewById(R.id.loginButton);
-        loginButton.setFragment(this);
-        loginButton.setReadPermissions("public_profile");
-        callbackManager = CallbackManager.Factory.create();
-        loginButton.registerCallback(callbackManager, callback);
+        logoutButton = (LoginButton) rootView.findViewById(R.id.loginButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                logout();
+            }
+        });
+
         profilePicImageView = (ImageView) rootView.findViewById(R.id.profilePicture);
         greeting = (TextView) rootView.findViewById(R.id.greeting);
+        pgbar = (ProgressBar)  rootView.findViewById(R.id.user_progressbar);
+        pgbar.setVisibility(View.VISIBLE);
+
+        SharedPreferences sharedPrefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
+        if(sharedPrefs.contains(getString(R.string.shared_pref_FbID))){
+
+            userId = sharedPrefs.getString(getString(R.string.shared_pref_FbID), null);
+            fullName = sharedPrefs.getString(getString(R.string.shared_pref_username), null);
+            updateUI();
+
+        }
         return rootView;
     }
 
@@ -161,67 +179,24 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         }
     }
 
-
-
     private void updateUI() {
         if (userId != null) {
             new LoadProfileImage(profilePicImageView).execute("https://graph.facebook.com/" + userId + "/picture?width=500&height=500");
-            greeting.setText(getString(R.string.hello_user, lastName+" "+firstName));
+            greeting.setText(fullName);
+            pgbar.setVisibility(View.GONE);
         } else {
             Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.ic_launcher);
             profilePicImageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(getContext(), icon, 200, 200, 200, false, false, false, false));
-            greeting.setText(null);
+            greeting.setText("Please Login!");
         }
     }
-
-
-    FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
-        @Override
-        public void onSuccess(LoginResult loginResult) {
-            GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                @Override
-                public void onCompleted(JSONObject object, GraphResponse response) {
-                    Log.e(TAG,object.toString());
-                    Log.e(TAG,response.toString());
-
-                    try {
-                        userId = object.getString("id");
-                        profilePicture = new URL("https://graph.facebook.com/" + userId + "/picture?width=500&height=500");
-                        if(object.has("first_name"))
-                            firstName = object.getString("first_name");
-                        if(object.has("last_name"))
-                            lastName = object.getString("last_name");
-                        updateUI();
-                        SharedPreferences.Editor editor = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE).edit();
-                        editor.putString(getString(R.string.shared_pref_FbID), userId);
-                        editor.commit();
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            Bundle parameters = new Bundle();
-            parameters.putString("fields", "id, first_name, last_name");
-            request.setParameters(parameters);
-            request.executeAsync();
-        }
-
-        @Override
-        public void onCancel() {
-        }
-
-        @Override
-        public void onError(FacebookException e) {
-            e.printStackTrace();
-        }
-    };
 
     private void logout(){
         LoginManager.getInstance().logOut();
+        Intent splash = new Intent(getActivity(), SplashActivity.class);
+        startActivity(splash);
     }
+
 }
 
 

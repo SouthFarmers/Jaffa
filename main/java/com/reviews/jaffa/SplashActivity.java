@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -19,12 +20,15 @@ import android.widget.Toast;
 
 import com.codemybrainsout.onboarder.AhoyOnboarderActivity;
 import com.codemybrainsout.onboarder.AhoyOnboarderCard;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
@@ -49,46 +53,71 @@ public class SplashActivity extends AhoyOnboarderActivity {
     private CallbackManager callbackManager;
     private LoginButton loginButton;
     Intent intent;
+    boolean loggedin;
+    private String hasSeenTutorial = "hasseentutorial";
+    private final int SPLASH_DISPLAY_LENGTH = 3000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Movie Reviews", "View reviews for all new releases.", R.drawable.backpack);
-        AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard("Reviews From Friends", "Check out reviews from your facebook friends and critics you follow.", R.drawable.chalk);
-        AhoyOnboarderCard ahoyOnboarderCard3 = new AhoyOnboarderCard("Add Review", "Sign up as a critic or member to add your reviews!.", R.drawable.chat);
+        FacebookSdk.setIsDebugEnabled(true);
+        FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+        intent = new Intent(this, MainActivity.class);
 
-        ahoyOnboarderCard1.setBackgroundColor(R.color.black_transparent);
-        ahoyOnboarderCard2.setBackgroundColor(R.color.black_transparent);
-        ahoyOnboarderCard3.setBackgroundColor(R.color.black_transparent);
+        SharedPreferences sharedPrefs = getSharedPreferences(hasSeenTutorial, MODE_PRIVATE);
+            if(sharedPrefs.getBoolean(hasSeenTutorial, false)){
 
-        List<AhoyOnboarderCard> pages = new ArrayList<>();
+                setContentView(R.layout.activity_splash);
 
-        pages.add(ahoyOnboarderCard1);
-        pages.add(ahoyOnboarderCard2);
-        pages.add(ahoyOnboarderCard3);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
 
-        for (AhoyOnboarderCard page : pages) {
-            page.setTitleColor(R.color.white);
-            page.setDescriptionColor(R.color.grey_200);
-            page.setTitleTextSize(dpToPixels(12, this));
-            page.setDescriptionTextSize(dpToPixels(8, this));
-            //page.setIconLayoutParams(width, height, marginTop, marginLeft, marginRight, marginBottom);
-        }
+                        if(isLoggedIn()){
+                            startActivity(intent);
+                        }else{
+                            tryLogin();
+                        }
+                    }
+                }, SPLASH_DISPLAY_LENGTH);
 
-        setFinishButtonTitle("Get Started");
-        showNavigationControls(true);
-        setGradientBackground();
+            }else{
+                AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Movie Reviews", "View reviews for all new releases.", R.drawable.backpack);
+                AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard("Reviews From Friends", "Check out reviews from your facebook friends and critics you follow.", R.drawable.chalk);
+                AhoyOnboarderCard ahoyOnboarderCard3 = new AhoyOnboarderCard("Add Review", "Sign up as a critic or member to add your reviews!.", R.drawable.chat);
 
-        //set the button style you created
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            setFinishButtonDrawableStyle(ContextCompat.getDrawable(this, R.drawable.rounded_button));
-        }
+                ahoyOnboarderCard1.setBackgroundColor(R.color.black_transparent);
+                ahoyOnboarderCard2.setBackgroundColor(R.color.black_transparent);
+                ahoyOnboarderCard3.setBackgroundColor(R.color.black_transparent);
 
-        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-        setFont(face);
+                final List<AhoyOnboarderCard> pages = new ArrayList<>();
 
-        setOnboardPages(pages);
+                pages.add(ahoyOnboarderCard1);
+                pages.add(ahoyOnboarderCard2);
+                pages.add(ahoyOnboarderCard3);
+
+                for (AhoyOnboarderCard page : pages) {
+                    page.setTitleColor(R.color.white);
+                    page.setDescriptionColor(R.color.grey_200);
+                    page.setTitleTextSize(dpToPixels(12, this));
+                    page.setDescriptionTextSize(dpToPixels(8, this));
+                    //page.setIconLayoutParams(width, height, marginTop, marginLeft, marginRight, marginBottom);
+                }
+
+                setFinishButtonTitle("Get Started");
+                showNavigationControls(true);
+                setGradientBackground();
+
+                //set the button style you created
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    setFinishButtonDrawableStyle(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+                }
+
+                Typeface face = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+                setFont(face);
+                setOnboardPages(pages);
+            }
     }
 
     @Override
@@ -99,6 +128,10 @@ public class SplashActivity extends AhoyOnboarderActivity {
 
     @Override
     public void onFinishButtonPressed() {
+        tryLogin();
+    }
+
+    public void tryLogin(){
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(this);
         View mView = layoutInflaterAndroid.inflate(R.layout.splash_login_now, null);
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(this);
@@ -117,7 +150,6 @@ public class SplashActivity extends AhoyOnboarderActivity {
         AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
         alertDialogAndroid.show();
     }
-
     FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
@@ -130,6 +162,7 @@ public class SplashActivity extends AhoyOnboarderActivity {
                     Log.e(TAG,response.toString());
 
                     try {
+                        //AccessToken token = AccessToken.getCurrentAccessToken();
                         userId = object.getString("id");
                         if(object.has("first_name"))
                             firstName = object.getString("first_name");
@@ -140,6 +173,10 @@ public class SplashActivity extends AhoyOnboarderActivity {
                         editor.putString(getString(R.string.shared_pref_username), firstName+" "+lastName);
                         editor.commit();
 
+                        SharedPreferences.Editor editor2 = getSharedPreferences(hasSeenTutorial, MODE_PRIVATE).edit();
+                        editor2.putBoolean(hasSeenTutorial, true);
+                        editor2.commit();
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -149,7 +186,7 @@ public class SplashActivity extends AhoyOnboarderActivity {
                 }
             });
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id, first_name, last_name");
+            parameters.putString("fields", "id, first_name, last_name, user_friends");
             request.setParameters(parameters);
             request.executeAsync();
         }
@@ -163,4 +200,9 @@ public class SplashActivity extends AhoyOnboarderActivity {
             e.printStackTrace();
         }
     };
+
+    public boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
+    }
 }

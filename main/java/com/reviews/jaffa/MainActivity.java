@@ -1,9 +1,11 @@
 package com.reviews.jaffa;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -24,15 +26,21 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.reviews.jaffa.Adapters.GridViewAdapter;
 import com.reviews.jaffa.Fragments.MainGridFragment;
 import com.reviews.jaffa.Fragments.MovieDetailFragment;
 import com.reviews.jaffa.Fragments.SocialShareFragment;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
+import com.reviews.jaffa.Helpers.ImageHelper;
 import com.reviews.jaffa.POJO.GridItem;
 import com.reviews.jaffa.POJO.ImageItem;
+import com.reviews.jaffa.Volley.VolleySingleton;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -62,6 +70,8 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mProgressBar;
     private GridViewAdapter mGridAdapter;
     private ArrayList<GridItem> mGridData;
+    private ImageView userpic;
+    private TextView username;
 
     public Toolbar getToolbar() {
         return toolbar;
@@ -87,6 +97,17 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+        userpic = (ImageView)  header.findViewById(R.id.nav_userpic);
+        username = (TextView)  header.findViewById(R.id.nav_username);
+
+        SharedPreferences sharedPrefs = getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
+        if(sharedPrefs.contains(getString(R.string.shared_pref_FbID))){
+
+            username.setText(sharedPrefs.getString(getString(R.string.shared_pref_username), null));
+            setImage(sharedPrefs.getString(getString(R.string.shared_pref_FbID), null));
+
+        }
 
         launchMainGridFragment();
 
@@ -183,5 +204,21 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void setImage(String id){
+        ImageRequest imgRequest = new ImageRequest("https://graph.facebook.com/" + id + "/picture?width=500&height=500",
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        userpic.setImageBitmap(ImageHelper.getRoundedCornerBitmap(MainActivity.this, response, 250, 200, 200, false, false, false, false));
+                    }
+                }, 0, 0, ImageView.ScaleType.FIT_XY, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                userpic.setBackgroundColor(Color.parseColor("#ff0000"));
+                error.printStackTrace();
+            }
+        });
+        VolleySingleton.getInstance().addToRequestQueue(imgRequest);
+    }
 
 }
