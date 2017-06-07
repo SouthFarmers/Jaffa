@@ -174,7 +174,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             if (result != null) {
                 Bitmap resized = Bitmap.createScaledBitmap(result, 200, 200, true);
                 bmImage.setImageBitmap(ImageHelper.getRoundedCornerBitmap(getContext(), resized, 250, 200, 200, false, false, false, false));
-
+                userProgress.setVisibility(View.GONE);
             }
         }
     }
@@ -183,7 +183,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
         if (userId != null) {
             new LoadProfileImage(profilePicImageView).execute("https://graph.facebook.com/" + userId + "/picture?width=500&height=500");
             greeting.setText(fullName);
-            userProgress.setVisibility(View.GONE);
+
         } else {
             Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.ic_launcher);
             profilePicImageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(getContext(), icon, 200, 200, 200, false, false, false, false));

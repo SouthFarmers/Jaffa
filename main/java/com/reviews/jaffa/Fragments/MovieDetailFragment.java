@@ -83,6 +83,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     private OnMovieDetailFragmentListener mListener;
     TextView movie_name,movie_director,movie_rating, movie_releasedate, movie_musicdirector, movie_title;
     ImageView movie_img;
+    private String friendsIDs = "friendsIDs";
+    String frindsIDs="";
     private static List<String> listRevfrnd_fbId,listRevfrnd_rating, listRevfrnd_revtext,listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext;
     ListView frndrevlistView, criticrevlistview;
     static FriendReviewsAdapter frndsrevadapter;
@@ -125,6 +127,10 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_musicdirector = (TextView) view.findViewById(R.id.movie_detail_mdirector);
         frndrevlistView=(ListView)view.findViewById(R.id.friends_review_list);
         criticrevlistview=(ListView)view.findViewById(R.id.critic_review_list);
+
+        SharedPreferences prefs2 = getActivity().getSharedPreferences(friendsIDs, MODE_PRIVATE);
+        frindsIDs = prefs2.getString(friendsIDs, null);
+
         return view;
     }
 
@@ -148,6 +154,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
                 SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
                 final String restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
+
                 if (restoreduserid != null) {
                     LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
                     View mView = layoutInflaterAndroid.inflate(R.layout.add_review, null);
@@ -229,7 +236,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     }
 
     public void moviedetailsvolley(){
-        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
+//        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
+        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=715741731&UserFbID=1468306842";
  //String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=1468306842,715741731";
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -260,12 +268,12 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                 if (responseObject.has("Reviews")) {
                                     JSONArray jsonArray = responseObject.getJSONArray("Reviews");
 
-                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                    for (int i = 0; i < 2; i++) {
                                         if(jsonArray.getJSONObject(i).optString("IsFriend").equalsIgnoreCase("true")){
                                             listRevfrnd_fbId.add(i, (jsonArray.getJSONObject(i).optString("FbID")));
                                             listRevfrnd_rating.add(i, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevfrnd_revtext.add(i, (jsonArray.getJSONObject(i).optString("MovieReview")));
-                                        }else{
+                                        }else if(jsonArray.getJSONObject(i).optString("IsCritic").equalsIgnoreCase("true")){
                                             listRevcritic_fbId.add(i, (jsonArray.getJSONObject(i).optString("FbID")));
                                             listRevcritic_rating.add(i, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevcritic_revtext.add(i, (jsonArray.getJSONObject(i).optString("MovieReview")));

@@ -39,6 +39,7 @@ import com.facebook.login.widget.LoginButton;
 import com.github.glomadrian.roadrunner.DeterminateRoadRunner;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,8 +64,9 @@ public class SplashActivity extends AhoyOnboarderActivity {
     Intent intent;
     boolean loggedin;
     private String hasSeenTutorial = "hasseentutorial";
+    private String friendsIDs = "friendsIDs";
     private final int SPLASH_DISPLAY_LENGTH = 3000;
-
+    String frindsIDs="";
     DeterminateRoadRunner determinateLoadingPath;
     ImageView textImage;
     private ValueAnimator progressAnimator;
@@ -121,6 +123,7 @@ public class SplashActivity extends AhoyOnboarderActivity {
                         textImage.startAnimation(textAnimation);
                         textImage.setVisibility(View.VISIBLE);
                         if(isLoggedIn()){
+                            getFriends();
                             startActivity(intent);
                         }else{
                             tryLogin();
@@ -157,7 +160,6 @@ public class SplashActivity extends AhoyOnboarderActivity {
                     page.setDescriptionColor(R.color.grey_200);
                     page.setTitleTextSize(dpToPixels(12, this));
                     page.setDescriptionTextSize(dpToPixels(8, this));
-                    //page.setIconLayoutParams(width, height, marginTop, marginLeft, marginRight, marginBottom);
                 }
 
                 setFinishButtonTitle("Get Started");
@@ -198,7 +200,7 @@ public class SplashActivity extends AhoyOnboarderActivity {
                     }
                 }).setView(mView);
         loginButton = (LoginButton) mView.findViewById(R.id.loginButton);
-        loginButton.setReadPermissions("public_profile");
+        loginButton.setReadPermissions("public_profile", "user_friends");
         callbackManager = CallbackManager.Factory.create();
         loginButton.registerCallback(callbackManager, callback);
         intent = new Intent(this, MainActivity.class);
@@ -213,8 +215,6 @@ public class SplashActivity extends AhoyOnboarderActivity {
             GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                 @Override
                 public void onCompleted(JSONObject object, GraphResponse response) {
-                    Log.e(TAG,object.toString());
-                    Log.e(TAG,response.toString());
 
                     try {
                         //AccessToken token = AccessToken.getCurrentAccessToken();
@@ -223,6 +223,7 @@ public class SplashActivity extends AhoyOnboarderActivity {
                             firstName = object.getString("first_name");
                         if(object.has("last_name"))
                             lastName = object.getString("last_name");
+                        getFriends();
                         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE).edit();
                         editor.putString(getString(R.string.shared_pref_FbID), userId);
                         editor.putString(getString(R.string.shared_pref_username), firstName+" "+lastName);
@@ -241,7 +242,7 @@ public class SplashActivity extends AhoyOnboarderActivity {
                 }
             });
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id, first_name, last_name, user_friends");
+            parameters.putString("fields", "id, first_name, last_name");
             request.setParameters(parameters);
             request.executeAsync();
         }
@@ -269,5 +270,34 @@ public class SplashActivity extends AhoyOnboarderActivity {
 
     public interface FinishLoadingListener {
         void onLoadingFinish();
+    }
+
+    private void getFriends() { GraphRequest request= GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONArrayCallback() {
+
+        @Override
+        public void onCompleted(JSONArray objects, GraphResponse response) {
+            // TODO Auto-generated method stub
+            try
+            {
+                JSONArray raw = response.getJSONObject().getJSONArray("data");
+                for(int x=0;x<objects.length();x++){
+                    frindsIDs = raw.getJSONObject(x).getString("id");
+                    frindsIDs = frindsIDs+",";
+                }
+                SharedPreferences.Editor editor3 = getSharedPreferences(friendsIDs, MODE_PRIVATE).edit();
+                editor3.putString(friendsIDs, frindsIDs);
+                editor3.commit();
+
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,installed");
+        request.setParameters(parameters);
+        request.executeAsync();
+
     }
 }
