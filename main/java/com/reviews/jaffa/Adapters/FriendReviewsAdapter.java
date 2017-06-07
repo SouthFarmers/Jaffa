@@ -46,7 +46,6 @@ public class FriendReviewsAdapter extends BaseAdapter implements View.OnClickLis
     Context mContext;
     private MovieDetailFragment.OnMovieDetailFragmentListener mListener;
     private List<String> listRevfrnd_fbId, listRevfrnd_rating,listRevfrnd_revtext;
-    LoadingView detailProgress;
     String access_token = "EAAFkKlScYZAcBAF1TLu9iurW5FO6vJMgKAPabNP603mSdsGPRnOixeKEZB9J4w10fpNCTY%20tOg6Xj4EhEF4X7f67Wpb8wkDKM4uUZCU2oDS6cOfsbXnzNb7lcSPJrjMyk5xzKhn9DjamXpEM%20W180Ha4ZCABCd3yYZD";
 
     private static class ViewHolder {
@@ -54,13 +53,12 @@ public class FriendReviewsAdapter extends BaseAdapter implements View.OnClickLis
         RatingBar revrating;
     }
 
-    public FriendReviewsAdapter(Context context, List<String> listRevfrnd_fbId, List<String> listRevfrnd_rating, List<String>listRevfrnd_revtext, LoadingView pgbar) {
+    public FriendReviewsAdapter(Context context, List<String> listRevfrnd_fbId, List<String> listRevfrnd_rating, List<String>listRevfrnd_revtext) {
         this.mContext=context;
         this.mContext=context;
         this.listRevfrnd_fbId = listRevfrnd_fbId;
         this.listRevfrnd_rating = listRevfrnd_rating;
         this.listRevfrnd_revtext = listRevfrnd_revtext;
-        this.detailProgress = pgbar;
         mListener = (MovieDetailFragment.OnMovieDetailFragmentListener) context;
 
 
@@ -111,16 +109,13 @@ public class FriendReviewsAdapter extends BaseAdapter implements View.OnClickLis
         holder.revName = (TextView) rowView.findViewById(R.id.reviewer_name);
         holder.fb_img = (ImageView) rowView.findViewById(R.id.fb_icon);
         holder.revrating = (RatingBar) rowView.findViewById(R.id.reviewer_rating);
-        detailProgress.setVisibility(View.VISIBLE);
         getUserprofile(listRevfrnd_fbId.get(position).toString(), holder);
         setImage("https://graph.facebook.com/"+listRevfrnd_fbId.get(position).toString()+"/picture?type=large&w‌​idth=100&height=150",holder);
 
         holder.revtext.setText(listRevfrnd_revtext.get(position).toString());
-        holder.revrating.setEnabled(false);
-        holder.revrating.setMax(5);
-        holder.revrating.setStepSize(0.01f);
+
         holder.revrating.setRating(Float.parseFloat(listRevfrnd_rating.get(position).toString()));
-        holder.revrating.invalidate();
+
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,7 +136,6 @@ public class FriendReviewsAdapter extends BaseAdapter implements View.OnClickLis
                     @Override
                     public void onResponse(JSONObject response) {
                         holder.revName.setText(response.optString("first_name")+" "+response.optString("last_name"));
-                        detailProgress.setVisibility(View.GONE);
                     }
 
                 }, new Response.ErrorListener() {

@@ -67,6 +67,14 @@
                 android:secondaryProgressTint="@android:color/holo_red_dark"
                 android:stepSize="0.5" />
 
+            <Button
+                android:id="@+id/followbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Follow"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="end"
+                android:theme="@style/FollowButton" />
         </LinearLayout>
 
     </LinearLayout>

@@ -8,46 +8,50 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.mingle.widget.LoadingView;
 import com.reviews.jaffa.Fragments.MovieDetailFragment;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.Volley.VolleySingleton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
 
 /**
- * Created by GauthamVejandla on 5/29/17.
+ * Created by gautham on 6/7/17.
  */
 
-public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickListener{
+public class OthersReviewsAdapter extends BaseAdapter implements View.OnClickListener{
 
     Context mContext;
     private MovieDetailFragment.OnMovieDetailFragmentListener mListener;
-    private List<String> listRevcritic_fbId, listRevcritic_rating,listRevcritic_revtext;
+    String userFbID;
+    private List<String> listRevother_fbId, listRevother_rating,listRevother_revtext;
     String access_token = "EAAFkKlScYZAcBAF1TLu9iurW5FO6vJMgKAPabNP603mSdsGPRnOixeKEZB9J4w10fpNCTY%20tOg6Xj4EhEF4X7f67Wpb8wkDKM4uUZCU2oDS6cOfsbXnzNb7lcSPJrjMyk5xzKhn9DjamXpEM%20W180Ha4ZCABCd3yYZD";
 
-    private static class ViewHolder {
-        TextView revtext;
-        RatingBar revrating;
-    }
+    public OthersReviewsAdapter(Context context, List<String> listRevother_fbId, List<String> listRevother_rating, List<String>listRevother_revtext, String restoreduserid) {
+        this.mContext=context;
+        this.mContext=context;
+        this.listRevother_fbId = listRevother_fbId;
+        this.listRevother_rating = listRevother_rating;
+        this.listRevother_revtext = listRevother_revtext;
+        this.userFbID = restoreduserid;
 
-    public CriticReviewsAdapter(Context context, List<String> listRevcritic_fbId, List<String> listRevcritic_rating, List<String>listRevcritic_revtext) {
-        this.mContext=context;
-        this.mContext=context;
-        this.listRevcritic_fbId = listRevcritic_fbId;
-        this.listRevcritic_rating = listRevcritic_rating;
-        this.listRevcritic_revtext = listRevcritic_revtext;
         mListener = (MovieDetailFragment.OnMovieDetailFragmentListener) context;
 
 
@@ -55,14 +59,12 @@ public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-
-
     }
 
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return listRevcritic_fbId.size();
+        return listRevother_fbId.size();
     }
 
     @Override
@@ -82,6 +84,7 @@ public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickLis
         TextView revtext;
         TextView revName;
         ImageView fb_img;
+        Button follow;
         RatingBar revrating;
     }
 
@@ -90,22 +93,31 @@ public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickLis
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
-        CriticReviewsAdapter.Holder holder=new CriticReviewsAdapter.Holder();
+        OthersReviewsAdapter.Holder holder=new OthersReviewsAdapter.Holder();
         View rowView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.moviedetail_review_row, parent, false);
+                .inflate(R.layout.moviedetail_others_review_row, parent, false);
 
         holder.revtext = (TextView) rowView.findViewById(R.id.reviewer_text);
         holder.revName = (TextView) rowView.findViewById(R.id.reviewer_name);
         holder.fb_img = (ImageView) rowView.findViewById(R.id.fb_icon);
         holder.revrating = (RatingBar) rowView.findViewById(R.id.reviewer_rating);
-        getUserprofile(listRevcritic_fbId.get(position).toString(), holder);
-        setImage("https://graph.facebook.com/"+listRevcritic_fbId.get(position).toString()+"/picture?type=large&w‌​idth=100&height=150",holder);
+        holder.follow = (Button) rowView.findViewById(R.id.followbutton);
+        holder.follow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FollowUser(userFbID,listRevother_fbId.get(position).toString());
+            }
+        });
 
-        holder.revtext.setText(listRevcritic_revtext.get(position).toString());
-        holder.revrating.setRating(Float.parseFloat(listRevcritic_rating.get(position).toString()));
+        getUserprofile(listRevother_fbId.get(position).toString(), holder);
+        setImage("https://graph.facebook.com/"+listRevother_fbId.get(position).toString()+"/picture?type=large&w‌​idth=100&height=150",holder);
+
+        holder.revtext.setText(listRevother_revtext.get(position).toString());
+        holder.revrating.setRating(Float.parseFloat(listRevother_rating.get(position).toString()));
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
             }
         });
 
@@ -114,7 +126,7 @@ public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickLis
 
 
 
-    public void getUserprofile(String fbID, final CriticReviewsAdapter.Holder holder){
+    public void getUserprofile(String fbID, final OthersReviewsAdapter.Holder holder){
 
         String url = "https://graph.facebook.com/"+fbID+"?access_token="+access_token;
 
@@ -123,6 +135,7 @@ public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickLis
                     @Override
                     public void onResponse(JSONObject response) {
                         holder.revName.setText(response.optString("first_name")+" "+response.optString("last_name"));
+                       // notifyDataSetChanged();
                     }
 
                 }, new Response.ErrorListener() {
@@ -137,7 +150,7 @@ public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickLis
     }
 
 
-    public void setImage(String url, final CriticReviewsAdapter.Holder holder){
+    public void setImage(String url, final OthersReviewsAdapter.Holder holder){
         Log.d("",url);
         ImageRequest imgRequest = new ImageRequest(url,
                 new Response.Listener<Bitmap>() {
@@ -154,4 +167,45 @@ public class CriticReviewsAdapter extends BaseAdapter implements View.OnClickLis
         });
         VolleySingleton.getInstance().addToRequestQueue(imgRequest);
     }
+
+
+    public void FollowUser(final String userFbID, final String FollowID){
+
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+
+        try{
+            jsonObject.put("CriticFbID",FollowID);
+            jsonObject.put("UserFbID",userFbID);
+            jsonArray.put(jsonObject);
+
+        }catch(Exception e){
+
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://jaffareviews.com/api/movie/FollowCritic", jsonObject,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        notifyDataSetChanged();
+//                        try {
+//                            //JSONArray arrData = response.getJSONArray("data");
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Error.Response", error.toString());
+                        Toast.makeText(mContext, "Something went wrong!",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(jsonObjectRequest);
+    }
 }
+

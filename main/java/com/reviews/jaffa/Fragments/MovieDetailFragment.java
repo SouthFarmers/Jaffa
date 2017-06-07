@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,8 @@ import android.view.animation.RotateAnimation;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
@@ -51,6 +54,8 @@ import com.android.volley.toolbox.Volley;
 import com.mingle.widget.LoadingView;
 import com.reviews.jaffa.Adapters.CriticReviewsAdapter;
 import com.reviews.jaffa.Adapters.FriendReviewsAdapter;
+import com.reviews.jaffa.Adapters.OthersReviewsAdapter;
+import com.reviews.jaffa.Helpers.ExpandedListView;
 import com.reviews.jaffa.MainActivity;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.Volley.VolleySingleton;
@@ -85,12 +90,14 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     ImageView movie_img;
     private String friendsIDs = "friendsIDs";
     String frindsIDs="";
-    private static List<String> listRevfrnd_fbId,listRevfrnd_rating, listRevfrnd_revtext,listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext;
-    ListView frndrevlistView, criticrevlistview;
+    private static List<String> listRevfrnd_fbId,listRevfrnd_rating, listRevfrnd_revtext,listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext,listRevother_fbId,listRevother_rating,listRevother_revtext;
+    ExpandedListView frndrevlistView, criticrevlistview,otherlistview;
     static FriendReviewsAdapter frndsrevadapter;
     static CriticReviewsAdapter criticrevadapter;
+    static OthersReviewsAdapter othersrevadapter;
     LoadingView detailProgress;
     View view;
+    String restoreduserid;
 
     public MovieDetailFragment() {
     }
@@ -125,11 +132,16 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_rating = (TextView) view.findViewById(R.id.movie_detail_rating);
         movie_releasedate = (TextView) view.findViewById(R.id.movie_detail_releasedate);
         movie_musicdirector = (TextView) view.findViewById(R.id.movie_detail_mdirector);
-        frndrevlistView=(ListView)view.findViewById(R.id.friends_review_list);
-        criticrevlistview=(ListView)view.findViewById(R.id.critic_review_list);
+        frndrevlistView=(ExpandedListView)view.findViewById(R.id.friends_review_list);
+        criticrevlistview=(ExpandedListView)view.findViewById(R.id.critic_review_list);
+        otherlistview=(ExpandedListView)view.findViewById(R.id.others_review_list);
+
 
         SharedPreferences prefs2 = getActivity().getSharedPreferences(friendsIDs, MODE_PRIVATE);
         frindsIDs = prefs2.getString(friendsIDs, null);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
+        restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
 
         return view;
     }
@@ -151,9 +163,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         // handle item selection
         switch (item.getItemId()) {
             case R.id.add_review:
-
-                SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
-                final String restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
 
                 if (restoreduserid != null) {
                     LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
@@ -254,6 +263,10 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                             listRevcritic_rating = new ArrayList<String>();
                             listRevcritic_revtext = new ArrayList<String>();
 
+                            listRevother_fbId = new ArrayList<String>();
+                            listRevother_rating = new ArrayList<String>();
+                            listRevother_revtext = new ArrayList<String>();
+
                             if (response.has("Movie")) {
                                 JSONObject responseObject = response.getJSONObject("Movie");
 
@@ -268,26 +281,53 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                 if (responseObject.has("Reviews")) {
                                     JSONArray jsonArray = responseObject.getJSONArray("Reviews");
 
-                                    for (int i = 0; i < 2; i++) {
+                                int j =0,k =0 ,l = 0;
+                                    for (int i = 0; i < jsonArray.length(); i++) {
                                         if(jsonArray.getJSONObject(i).optString("IsFriend").equalsIgnoreCase("true")){
-                                            listRevfrnd_fbId.add(i, (jsonArray.getJSONObject(i).optString("FbID")));
-                                            listRevfrnd_rating.add(i, (jsonArray.getJSONObject(i).optString("MovieRating")));
-                                            listRevfrnd_revtext.add(i, (jsonArray.getJSONObject(i).optString("MovieReview")));
-                                        }else if(jsonArray.getJSONObject(i).optString("IsCritic").equalsIgnoreCase("true")){
-                                            listRevcritic_fbId.add(i, (jsonArray.getJSONObject(i).optString("FbID")));
-                                            listRevcritic_rating.add(i, (jsonArray.getJSONObject(i).optString("MovieRating")));
-                                            listRevcritic_revtext.add(i, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                            listRevfrnd_fbId.add(j, (jsonArray.getJSONObject(i).optString("FbID")));
+                                            listRevfrnd_rating.add(j, (jsonArray.getJSONObject(i).optString("MovieRating")));
+                                            listRevfrnd_revtext.add(j, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                            j++;
+                                        }else if(jsonArray.getJSONObject(i).optString("IsFollower").equalsIgnoreCase("true")){
+                                            listRevcritic_fbId.add(k, (jsonArray.getJSONObject(i).optString("FbID")));
+                                            listRevcritic_rating.add(k, (jsonArray.getJSONObject(i).optString("MovieRating")));
+                                            listRevcritic_revtext.add(k, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                            k++;
+                                        }else{
+                                            listRevother_fbId.add(l, (jsonArray.getJSONObject(i).optString("FbID")));
+                                            listRevother_rating.add(l, (jsonArray.getJSONObject(i).optString("MovieRating")));
+                                            listRevother_revtext.add(l, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                            l++;
                                         }
                                     }
                                 }
 
-                                frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext, detailProgress);
-                                frndrevlistView.setAdapter(frndsrevadapter);
+                                if(listRevfrnd_fbId.size() > 0){
+                                    frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext);
+                                    frndrevlistView.setAdapter(frndsrevadapter);
 
-                                criticrevadapter = new CriticReviewsAdapter(getActivity(), listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext);
-                                criticrevlistview.setAdapter(criticrevadapter);
+                                }
+                                if(listRevcritic_fbId.size() > 0){
+                                    criticrevadapter = new CriticReviewsAdapter(getActivity(), listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext);
+                                    criticrevlistview.setAdapter(criticrevadapter);
 
+                                }
+                                if(listRevother_fbId.size() > 0){
+                                    othersrevadapter = new OthersReviewsAdapter(getActivity(), listRevother_fbId,listRevother_rating,listRevother_revtext, restoreduserid);
+                                    otherlistview.setAdapter(othersrevadapter);
 
+                                    otherlistview.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+
+                                        @Override
+                                        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                                            otherlistview.removeOnLayoutChangeListener(this);
+                                            detailProgress.setVisibility(View.GONE);
+                                        }
+                                    });
+
+                                    othersrevadapter.notifyDataSetChanged();
+
+                                }
                                 setMovieValues();
                                 setImage(movieImage);
                             }
@@ -314,18 +354,21 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     }
 
     public void setImage(String url){
-        Log.d("",url);
+
         ImageRequest imgRequest = new ImageRequest(url,
                 new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap response) {
                         movie_img.setImageBitmap(response);
+                        detailProgress.setVisibility(View.GONE);
+
                     }
                 }, 0, 0, ImageView.ScaleType.FIT_XY, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 movie_img.setBackgroundColor(Color.parseColor("#ff0000"));
                 error.printStackTrace();
+
             }
         });
         VolleySingleton.getInstance().addToRequestQueue(imgRequest);
