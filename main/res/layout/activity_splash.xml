@@ -3,7 +3,7 @@
     xmlns:lib="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:background="@color/bg"
+    android:background="@color/second_slide_buttons"
     android:layout_height="match_parent">
 
     <com.github.glomadrian.roadrunner.DeterminateRoadRunner

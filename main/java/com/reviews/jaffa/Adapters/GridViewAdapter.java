@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -18,10 +19,14 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.reviews.jaffa.Fragments.MainGridFragment;
 import com.reviews.jaffa.POJO.GridItem;
 import com.reviews.jaffa.POJO.ImageItem;
 import com.reviews.jaffa.R;
+import com.reviews.jaffa.Volley.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -32,20 +37,15 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
     private Context mContext;
     private MainGridFragment.OnMainGridFragmentListener mListener;
     private ArrayList<GridItem> mGridData = new ArrayList<GridItem>();
-    private List<String> title, rating,director, movieID, mImage, mDirector, releaseDate;
-    TextView movie_title,movie_id, movie_director;
+    private List<String> title, rating,director;
+    TextView movie_title, movie_director, movie_rating;
     ImageView movie_image;
-    RatingBar movie_rating;
 
-    public GridViewAdapter(Context context,List<String> title,List<String> rating,List<String>director,List<String>movieID, List<String>mImage, List<String>mDirector, List<String>releaseDate) {
+    public GridViewAdapter(Context context,List<String> title,List<String> rating,List<String>director) {
         mContext = context;
         this.title = title;
         this.rating = rating;
         this.director = director;
-        this.movieID = movieID;
-        this.mImage = mImage;
-        this.mDirector = mDirector;
-        this.releaseDate = releaseDate;
         mListener = (MainGridFragment.OnMainGridFragmentListener) context;
 
     }
@@ -61,9 +61,8 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
             mView = view;
             movie_image = (ImageView) view.findViewById(R.id.grid_movie_image);
             movie_title = (TextView) view.findViewById(R.id.grid_movie_title);
-            movie_id = (TextView) view.findViewById(R.id.grid_movie_id);
             movie_director = (TextView)view.findViewById(R.id.grid_movie_director);
-            movie_rating = (RatingBar) view.findViewById(R.id.grid_movie_rating);
+            movie_rating = (TextView) view.findViewById(R.id.grid_movie_rating);
         }
     }
 
@@ -79,11 +78,10 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
-        movie_image.setImageResource(R.mipmap.ic_launcher);
+        setImage(title.get(position).toString(),movie_image );
         movie_title.setText(title.get(position).toString());
         movie_director.setText(director.get(position).toString());
-        movie_id.setText(movieID.get(position).toString());
-        movie_rating.setNumStars(Integer.parseInt(rating.get(position).toString()));
+        movie_rating.setText(rating.get(position).toString());
 
 
 
@@ -94,6 +92,27 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
             }
         });
 
+    }
+
+    public void setImage(String title,final  ImageView movie_img){
+
+        String url = "http://jaffareviews.com/Images/Movies/"+title+"/Movie.jpg";
+        ImageRequest imgRequest = new ImageRequest(url,
+                new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap response) {
+                        movie_img.setImageBitmap(response);
+
+                    }
+                }, 0, 0, ImageView.ScaleType.FIT_XY, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                movie_img.setBackgroundColor(Color.parseColor("#ff0000"));
+                error.printStackTrace();
+
+            }
+        });
+        VolleySingleton.getInstance().addToRequestQueue(imgRequest);
     }
 
 

@@ -109,8 +109,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        //launchMainGridFragment();
-        launchPropertyDetailFragment("manam");
+        launchMainGridFragment();
 
     }
 

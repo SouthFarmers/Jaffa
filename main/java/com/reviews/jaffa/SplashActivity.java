@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -23,8 +24,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
-import com.codemybrainsout.onboarder.AhoyOnboarderActivity;
-import com.codemybrainsout.onboarder.AhoyOnboarderCard;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -38,6 +37,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.glomadrian.roadrunner.DeterminateRoadRunner;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
+import com.reviews.jaffa.Helpers.CustomOnboardSlide;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,13 +48,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import agency.tango.materialintroscreen.MaterialIntroActivity;
+import agency.tango.materialintroscreen.SlideFragment;
+import agency.tango.materialintroscreen.SlideFragmentBuilder;
+
 import static java.security.AccessController.getContext;
 
 /**
  * Created by gautham on 6/2/17.
  */
 
-public class SplashActivity extends AhoyOnboarderActivity {
+public class SplashActivity extends MaterialIntroActivity {
 
     private String firstName,lastName;
     private String userId;
@@ -141,39 +145,10 @@ public class SplashActivity extends AhoyOnboarderActivity {
                 progressAnimator.start();
 
             }else{
-                AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("Movie Reviews", "View reviews for all new releases.", R.drawable.backpack);
-                AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard("Reviews From Friends", "Check out reviews from your facebook friends and critics you follow.", R.drawable.chalk);
-                AhoyOnboarderCard ahoyOnboarderCard3 = new AhoyOnboarderCard("Add Review", "Sign up as a critic or member to add your reviews!.", R.drawable.chat);
-
-                ahoyOnboarderCard1.setBackgroundColor(R.color.black_transparent);
-                ahoyOnboarderCard2.setBackgroundColor(R.color.black_transparent);
-                ahoyOnboarderCard3.setBackgroundColor(R.color.black_transparent);
-
-                final List<AhoyOnboarderCard> pages = new ArrayList<>();
-
-                pages.add(ahoyOnboarderCard1);
-                pages.add(ahoyOnboarderCard2);
-                pages.add(ahoyOnboarderCard3);
-
-                for (AhoyOnboarderCard page : pages) {
-                    page.setTitleColor(R.color.white);
-                    page.setDescriptionColor(R.color.grey_200);
-                    page.setTitleTextSize(dpToPixels(12, this));
-                    page.setDescriptionTextSize(dpToPixels(8, this));
-                }
-
-                setFinishButtonTitle("Get Started");
-                showNavigationControls(true);
-                setGradientBackground();
-
-                //set the button style you created
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    setFinishButtonDrawableStyle(ContextCompat.getDrawable(this, R.drawable.rounded_button));
-                }
-
-                Typeface face = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-                setFont(face);
-                setOnboardPages(pages);
+                TaskStackBuilder.create(this)
+                        .addNextIntentWithParentStack(new Intent(this, SplashActivity.class))
+                        .addNextIntent(new Intent(this, IntroActivity.class))
+                        .startActivities();
             }
     }
 
@@ -181,11 +156,6 @@ public class SplashActivity extends AhoyOnboarderActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onFinishButtonPressed() {
-        tryLogin();
     }
 
     public void tryLogin(){
@@ -228,10 +198,6 @@ public class SplashActivity extends AhoyOnboarderActivity {
                         editor.putString(getString(R.string.shared_pref_FbID), userId);
                         editor.putString(getString(R.string.shared_pref_username), firstName+" "+lastName);
                         editor.commit();
-
-                        SharedPreferences.Editor editor2 = getSharedPreferences(hasSeenTutorial, MODE_PRIVATE).edit();
-                        editor2.putBoolean(hasSeenTutorial, true);
-                        editor2.commit();
 
 
                     } catch (JSONException e) {

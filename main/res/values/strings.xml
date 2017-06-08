@@ -25,8 +25,14 @@
         <string name="app_id">355198514515820</string>
         <string name="exception">Exception: %1$s</string>
     <string name="shared_pref_FbID">UserFbID</string>
+    <string name="user_tag">user_tag</string>
     <string name="shared_pref_username">Username</string>
 
+    <string name="critic">Signup as Critic.</string>
+    <string name="fan">Signup as Fan.</string>
+    <string name="error_message">Please Select an option to continue.</string>
+    <string name="Critic_text"><b><i>A Critic </i></b>\n\n\t•Your Reviews are public \n\t•People can follow you \n\t•You rank in leaderboard is public \n\n</string>
+    <string name="Fan_text"><b>A Fan </b>\n\n\t•Your Reviews are private, only your friends can view them \n\t•You can follow Critics</string>
 
     <string-array name="image_ids">
         <item>@drawable/bb</item>

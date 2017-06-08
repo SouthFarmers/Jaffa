@@ -45,7 +45,7 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     //ProgressBar progressBar;
     LoadingView progress;
     FireworkyPullToRefreshLayout mPullToRefresh;
-    private static List<String> listMovieTitle, listMovieRating, listMovieDirector, listMovieID, ListMovieImage, ListMovieMusicDirector, ListMovieReleaseDate, ListMovieReviews, ListMovieInfo;
+    private static List<String> listMovieTitle, listMovieRating, listMovieDirector;
 
     public static MainGridFragment newInstance() {
         Bundle args = new Bundle();
@@ -138,12 +138,6 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                             listMovieTitle = new ArrayList<String>();
                             listMovieRating = new ArrayList<String>();
                             listMovieDirector = new ArrayList<String>();
-                            listMovieID = new ArrayList<String>();
-                            ListMovieImage = new ArrayList<String>();
-                            ListMovieMusicDirector = new ArrayList<String>();
-                            ListMovieReleaseDate = new ArrayList<String>();
-                            ListMovieReviews = new ArrayList<String>();
-                            ListMovieInfo = new ArrayList<String>();
 
 
                             if (response.has("movies")) {
@@ -155,18 +149,12 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                                         listMovieTitle.add(i, (jsonArray.getJSONObject(i).optString("MovieName")));
                                         listMovieRating.add(i, (jsonArray.getJSONObject(i).optString("AvgRating")));
                                         listMovieDirector.add(i, (jsonArray.getJSONObject(i).optString("Director")));
-                                        listMovieID.add(i, (jsonArray.getJSONObject(i).optString("MovieID")));
-                                        ListMovieImage.add(i, (jsonArray.getJSONObject(i).optString("MovieImage")));
-                                        ListMovieMusicDirector.add(i, (jsonArray.getJSONObject(i).optString("MusicDirector")));
-                                        ListMovieReleaseDate.add(i, (jsonArray.getJSONObject(i).optString("ReleaseDate")));
-                                        ListMovieReviews.add(i, (jsonArray.getJSONObject(i).optString("Reviews")));
-                                        ListMovieInfo.add(i, (jsonArray.getJSONObject(i).optString("MovieInfo")));
                                     }
                                 }
                             }
 
 
-                                mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating,listMovieDirector, listMovieID, ListMovieImage, ListMovieMusicDirector, ListMovieReleaseDate);
+                                mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating,listMovieDirector);
                                 recyclerView.setAdapter(mainadapter);
                             //progressBar.setVisibility(View.GONE);
                             progress.setVisibility(View.GONE);

@@ -1,50 +1,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="5dp"
     android:background="@drawable/grid_color_selector"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:layout_gravity="center"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
 
     <ImageView
         android:id="@+id/grid_movie_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:scaleType="centerCrop"/>
-    <TextView
-        android:id="@+id/grid_movie_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"/>
+        android:layout_gravity="center"
+        android:scaleType="centerInside"/>
 
     <TextView
         android:id="@+id/grid_movie_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:gravity="center"
         android:textStyle="bold"
         android:maxLines="2"
         android:ellipsize="marquee"
-        android:textSize="12sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/grid_movie_director"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:gravity="center"
         android:textStyle="bold"
         android:maxLines="2"
         android:ellipsize="marquee"
-        android:textSize="12sp" />
+        android:textSize="16sp" />
 
-    <RatingBar
-        android:id="@+id/grid_movie_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        style="@style/Widget.AppCompat.RatingBar.Indicator"
-        android:numStars="5"
-        android:rating="3" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:src="@drawable/heart"/>
+
+        <TextView
+            android:id="@+id/grid_movie_rating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="marquee"
+            android:layout_gravity="center"
+            android:text="85"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -134,7 +134,7 @@ public class OthersReviewsAdapter extends BaseAdapter implements View.OnClickLis
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        holder.revName.setText(response.optString("first_name")+" "+response.optString("last_name"));
+                        holder.revName.setText(response.optString("first_name"));
                        // notifyDataSetChanged();
                     }
 
