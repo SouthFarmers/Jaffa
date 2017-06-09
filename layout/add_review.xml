@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/custom_dialog_layout_design_user_input"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Review"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <EditText
+        android:inputType="textMultiLine"
+        android:id="@+id/add_review_text"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:hint="Enter Something"
+        android:lines="10"/>
+
+    <RatingBar
+        android:id="@+id/add_review_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:numStars="5"
+        android:visibility="invisible"
+        android:stepSize="0.5"/>
+
+    <ademar.phasedseekbar.PhasedSeekBar
+        android:id="@+id/psb_star"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        app:phased_anchor_height="40dp"
+        app:phased_anchor_width="40dp"
+        app:phased_base_background="@drawable/bg_starbar"
+        app:phased_base_margin_bottom="10dp"
+        app:phased_base_margin_left="30dp"
+        app:phased_base_margin_right="30dp"
+        app:phased_base_margin_top="10dp"
+        app:phased_draw_on_off="false"
+        app:phased_fix_point="true"
+        app:phased_item_height="80dp"
+        app:phased_item_width="80dp"
+        app:phased_mode="horizontal"/>
+
+</LinearLayout>

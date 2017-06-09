@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:lib="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/second_slide_buttons"
+    android:layout_height="match_parent">
+
+    <com.github.glomadrian.roadrunner.DeterminateRoadRunner
+        android:id="@+id/determinate"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        lib:movement_direction="counter_clockwise"
+        lib:movement_loop_time="2000"
+        lib:path_color="@color/colorAccent"
+        lib:stroke_width="2sp"
+        lib:min="0"
+        lib:max="1000"
+        lib:path_data="@string/roadrunner"
+        lib:path_original_width="@integer/roadrunner_original_width"
+        lib:path_original_height="@integer/roadrunner_original_height"
+        lib:animate_on_start="true"
+android:layout_gravity="center"
+        android:layout_marginTop="44dp" android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+
+    <ImageView
+        android:id="@+id/text_image"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/title"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:layout_below="@+id/determinate" android:layout_alignLeft="@+id/determinate"
+        android:layout_alignStart="@+id/determinate"/>
+</LinearLayout>
