@@ -27,6 +27,7 @@
     <string name="shared_pref_FbID">UserFbID</string>
     <string name="user_tag">user_tag</string>
     <string name="shared_pref_username">Username</string>
+    <string name="shared_pref_email">Email</string>
 
     <string name="critic">Signup as Critic.</string>
     <string name="fan">Signup as Fan.</string>
@@ -36,11 +37,6 @@
 
     <string-array name="image_ids">
         <item>@drawable/bb</item>
-        <item>@drawable/scn</item>
-        <item>@drawable/akhil</item>
-        <item>@drawable/agadu</item>
-        <item>@drawable/kan</item>
-        <item>@drawable/agadu</item>
     </string-array>
 
 
