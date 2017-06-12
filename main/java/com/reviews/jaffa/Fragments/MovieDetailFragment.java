@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -75,6 +77,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import ademar.phasedseekbar.PhasedListener;
+import ademar.phasedseekbar.PhasedSeekBar;
+import ademar.phasedseekbar.SimplePhasedAdapter;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -98,6 +104,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     LoadingView detailProgress;
     View view;
     String restoreduserid;
+    protected PhasedSeekBar psbStar;
+    private int selectedstar;
 
     public MovieDetailFragment() {
     }
@@ -114,6 +122,11 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        SharedPreferences prefs2 = getActivity().getSharedPreferences(friendsIDs, MODE_PRIVATE);
+        frindsIDs = prefs2.getString(friendsIDs, null);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
+        restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
         if (getArguments() != null) {
             movieName = getArguments().getString(movie_NAME);
         }
@@ -136,13 +149,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         criticrevlistview=(ExpandedListView)view.findViewById(R.id.critic_review_list);
         otherlistview=(ExpandedListView)view.findViewById(R.id.others_review_list);
 
-
-        SharedPreferences prefs2 = getActivity().getSharedPreferences(friendsIDs, MODE_PRIVATE);
-        frindsIDs = prefs2.getString(friendsIDs, null);
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
-        restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
-
         return view;
     }
 
@@ -163,22 +169,34 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         // handle item selection
         switch (item.getItemId()) {
             case R.id.add_review:
-
-                if (restoreduserid != null) {
                     LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
                     View mView = layoutInflaterAndroid.inflate(R.layout.add_review, null);
                     AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(getActivity());
                     alertDialogBuilderUserInput.setView(mView);
-
                     final EditText addreviewText = (EditText) mView.findViewById(R.id.add_review_text);
-                    final RatingBar addreviewRating = (RatingBar) mView.findViewById(R.id.add_review_rating);
+                    psbStar = (PhasedSeekBar) mView.findViewById(R.id.psb_star);
+                    final Resources resources = getResources();
+                    psbStar.setAdapter(new SimplePhasedAdapter(resources, new int[] {
+                            R.drawable.btn_star1_selector,
+                            R.drawable.btn_star2_selector,
+                            R.drawable.btn_star3_selector,
+                            R.drawable.btn_star4_selector,
+                            R.drawable.btn_star5_selector }));
+
+                psbStar.setListener(new PhasedListener() {
+                    @Override
+                    public void onPositionSelected(int position) {
+                        selectedRating(position);
+
+                    }
+                });
+
                     alertDialogBuilderUserInput
                             .setCancelable(false)
                             .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialogBox, int id) {
                                     // ToDo get user input here
-                                    AddReview(addreviewText.getText().toString(), Integer.parseInt(movieID), Integer.parseInt(restoreduserid), addreviewRating.getRating());
-
+                                    AddReview(addreviewText.getText().toString(), Integer.parseInt(movieID), Integer.parseInt(restoreduserid), selectedstar);
                                 }
                             })
 
@@ -191,32 +209,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
                     AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                     alertDialogAndroid.show();
-                }else{
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-                    builder1.setMessage("Login to add review.");
-                    builder1.setCancelable(true);
-                    builder1.setPositiveButton(
-                            "Ok",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                                    ft.replace(R.id.mainlist_fragment, UserProfileFragment.newInstance());
-                                    ft.addToBackStack(null);
-                                    ft.commit();
-                                }
-                            });
-                    builder1.setNegativeButton(
-                            "Cancel",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert11 = builder1.create();
-                    alert11.show();
-                }
-
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -246,7 +238,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
     public void moviedetailsvolley(){
 //        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
-        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=715741731&UserFbID=1468306842";
+        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds="+frindsIDs+"&UserFbID="+restoreduserid;
+//        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=715741731&UserFbID=1468306842";
  //String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=1468306842,715741731";
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -288,12 +281,12 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                             listRevfrnd_rating.add(j, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevfrnd_revtext.add(j, (jsonArray.getJSONObject(i).optString("MovieReview")));
                                             j++;
-                                        }else if(jsonArray.getJSONObject(i).optString("IsFollower").equalsIgnoreCase("true")){
+                                        }else if(jsonArray.getJSONObject(i).optString("IsFollower").equalsIgnoreCase("true")  && jsonArray.getJSONObject(i).optString("IsCritic").equalsIgnoreCase("true")){
                                             listRevcritic_fbId.add(k, (jsonArray.getJSONObject(i).optString("FbID")));
                                             listRevcritic_rating.add(k, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevcritic_revtext.add(k, (jsonArray.getJSONObject(i).optString("MovieReview")));
                                             k++;
-                                        }else{
+                                        }else if (jsonArray.getJSONObject(i).optString("IsCritic").equalsIgnoreCase("true")){
                                             listRevother_fbId.add(l, (jsonArray.getJSONObject(i).optString("FbID")));
                                             listRevother_rating.add(l, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevother_revtext.add(l, (jsonArray.getJSONObject(i).optString("MovieReview")));
@@ -305,6 +298,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                 if(listRevfrnd_fbId.size() > 0){
                                     frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext);
                                     frndrevlistView.setAdapter(frndsrevadapter);
+                                    new Task().execute();
 
                                 }
                                 if(listRevcritic_fbId.size() > 0){
@@ -329,7 +323,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
                                 }
                                 setMovieValues();
-                                setImage(movieImage);
+                                setImage(movieImage.replaceAll(" ", "%20"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -437,4 +431,27 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(jsonObjectRequest);
     }
+
+    public void selectedRating(int pos){
+        selectedstar = pos+1;
+    }
+
+    class Task extends AsyncTask<String, Integer, Boolean> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            return null;
+        }
+    }
+
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.cleveroad.pulltorefresh.firework.FireworkyPullToRefreshLayout;
 import com.mingle.widget.LoadingView;
 import com.reviews.jaffa.Adapters.GridViewAdapter;
+import com.reviews.jaffa.LeaderBoardCards.CardFragmentPagerAdapter;
+import com.reviews.jaffa.LeaderBoardCards.ShadowTransformer;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.Volley.VolleySingleton;
 
@@ -42,9 +45,11 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     private boolean mIsRefreshing;
     static GridViewAdapter mainadapter;
     static RecyclerView recyclerView;
-    //ProgressBar progressBar;
+    private ViewPager mViewPager;
     LoadingView progress;
     FireworkyPullToRefreshLayout mPullToRefresh;
+    private CardFragmentPagerAdapter mFragmentCardAdapter;
+    private ShadowTransformer mFragmentCardShadowTransformer;
     private static List<String> listMovieTitle, listMovieRating, listMovieDirector;
 
     public static MainGridFragment newInstance() {
@@ -82,10 +87,6 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public interface OnMainGridFragmentInteractionListener {
-        void onPropertyClick(String title);
-    }
-
     public interface OnMainGridFragmentListener {
         void onPropertyClick(String title);
         void disableCollapse();
@@ -99,15 +100,21 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.mainlist_fragment, container, false);
         progress = (LoadingView) rootView.findViewById(R.id.main_progress);
-        //progressBar = (ProgressBar) rootView.findViewById(R.id.main_progressBar);
         mPullToRefresh = (FireworkyPullToRefreshLayout) rootView.findViewById(R.id.pullToRefresh);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.main_list);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
-        //progressBar.setVisibility(View.VISIBLE);
+//        mViewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
+//        mFragmentCardAdapter = new CardFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
+//                dpToPixels(2, getActivity()));
+//
+//        mFragmentCardShadowTransformer = new ShadowTransformer(mViewPager, mFragmentCardAdapter);
+//        mFragmentCardShadowTransformer.enableScaling(true);
+//        mViewPager.setAdapter(mFragmentCardAdapter);
+//        mViewPager.setPageTransformer(false, mFragmentCardShadowTransformer);
+//        mViewPager.setOffscreenPageLimit(3);
 
        allMoviesvolley();
         return rootView;
@@ -156,14 +163,12 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
                                 mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating,listMovieDirector);
                                 recyclerView.setAdapter(mainadapter);
-                            //progressBar.setVisibility(View.GONE);
                             progress.setVisibility(View.GONE);
                             mPullToRefresh.setRefreshing(mIsRefreshing = false);
 
                         } catch (JSONException e) {
 
                             e.printStackTrace();
-//                            progressBar.setVisibility(View.GONE);
                             progress.setVisibility(View.GONE);
                         }
                     }
@@ -172,7 +177,6 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-//                        progressBar.setVisibility(View.GONE);
                         progress.setVisibility(View.GONE);
                     }
                 });
@@ -189,5 +193,9 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                 allMoviesvolley();
             }
         });
+    }
+
+    public static float dpToPixels(int dp, Context context) {
+        return dp * (context.getResources().getDisplayMetrics().density);
     }
 }

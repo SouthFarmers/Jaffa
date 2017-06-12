@@ -188,11 +188,12 @@ public class OthersReviewsAdapter extends BaseAdapter implements View.OnClickLis
                     @Override
                     public void onResponse(JSONObject response) {
                         notifyDataSetChanged();
-//                        try {
-//                            //JSONArray arrData = response.getJSONArray("data");
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
+                        try {
+                            JSONArray arrData = response.getJSONArray("data");
+                            JSONArray arr = arrData;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener(){

@@ -2,6 +2,7 @@ package com.reviews.jaffa;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,12 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -58,9 +65,9 @@ import static java.security.AccessController.getContext;
  * Created by gautham on 6/2/17.
  */
 
-public class SplashActivity extends MaterialIntroActivity {
+public class SplashActivity extends Activity {
 
-    private String firstName,lastName;
+    private String firstName,lastName, email;
     private String userId;
     private String TAG = "LoginActivity";
     private CallbackManager callbackManager;
@@ -193,12 +200,15 @@ public class SplashActivity extends MaterialIntroActivity {
                             firstName = object.getString("first_name");
                         if(object.has("last_name"))
                             lastName = object.getString("last_name");
+                        if(object.has("email"))
+                            email = object.getString("email");
                         getFriends();
                         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE).edit();
                         editor.putString(getString(R.string.shared_pref_FbID), userId);
                         editor.putString(getString(R.string.shared_pref_username), firstName+" "+lastName);
+                        editor.putString(getString(R.string.shared_pref_email), email);
                         editor.commit();
-
+                        registerUserWithDB();
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -265,5 +275,50 @@ public class SplashActivity extends MaterialIntroActivity {
         request.setParameters(parameters);
         request.executeAsync();
 
+    }
+
+    private void registerUserWithDB(){
+        Boolean isCritic = false;
+
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.user_tag), MODE_PRIVATE);
+        if(prefs.getString(getString(R.string.shared_pref_FbID), null) == "IsCritic"){
+            isCritic = true;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+
+        try{
+            jsonObject.put("FirstName",firstName);
+            jsonObject.put("LastName",lastName);
+            jsonObject.put("EmailID", email);
+            jsonObject.put("IsCritic", isCritic);
+            jsonObject.put("FbID",userId);
+            jsonArray.put(jsonObject);
+
+        }catch(Exception e){
+
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, "http://jaffareviews.com/api/movie/AddUser", jsonObject,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray arrData = response.getJSONArray("data");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Error.Response", error.toString());
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonObjectRequest);
     }
 }
