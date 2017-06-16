@@ -35,9 +35,6 @@
     <string name="Critic_text"><b><i>A Critic </i></b>\n\n\t•Your Reviews are public \n\t•People can follow you \n\t•You rank in leaderboard is public \n\n</string>
     <string name="Fan_text"><b>A Fan </b>\n\n\t•Your Reviews are private, only your friends can view them \n\t•You can follow Critics</string>
 
-    <string-array name="image_ids">
-        <item>@drawable/bb</item>
-    </string-array>
 
 
     <string name="roadrunner">

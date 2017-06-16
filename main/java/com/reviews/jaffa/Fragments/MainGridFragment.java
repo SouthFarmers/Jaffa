@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -50,7 +52,8 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     FireworkyPullToRefreshLayout mPullToRefresh;
     private CardFragmentPagerAdapter mFragmentCardAdapter;
     private ShadowTransformer mFragmentCardShadowTransformer;
-    private static List<String> listMovieTitle, listMovieRating, listMovieDirector;
+    private int numberofleaders;
+    private static List<String> listMovieTitle, listMovieRating, leaderboardname,leaderboardfollowers,leaderboardratings,leaderboardfbId;
 
     public static MainGridFragment newInstance() {
         Bundle args = new Bundle();
@@ -104,19 +107,13 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
         progress = (LoadingView) rootView.findViewById(R.id.main_progress);
         mPullToRefresh = (FireworkyPullToRefreshLayout) rootView.findViewById(R.id.pullToRefresh);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.main_list);
+        recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
-//        mViewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-//        mFragmentCardAdapter = new CardFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
-//                dpToPixels(2, getActivity()));
-//
-//        mFragmentCardShadowTransformer = new ShadowTransformer(mViewPager, mFragmentCardAdapter);
-//        mFragmentCardShadowTransformer.enableScaling(true);
-//        mViewPager.setAdapter(mFragmentCardAdapter);
-//        mViewPager.setPageTransformer(false, mFragmentCardShadowTransformer);
-//        mViewPager.setOffscreenPageLimit(3);
+        mViewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
 
        allMoviesvolley();
+        loadLeaderboard();
         return rootView;
     }
 
@@ -144,7 +141,6 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                         try {
                             listMovieTitle = new ArrayList<String>();
                             listMovieRating = new ArrayList<String>();
-                            listMovieDirector = new ArrayList<String>();
 
 
                             if (response.has("movies")) {
@@ -155,13 +151,10 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                                     if (jsonArray.getJSONObject(i).has("MovieName")) {
                                         listMovieTitle.add(i, (jsonArray.getJSONObject(i).optString("MovieName")));
                                         listMovieRating.add(i, (jsonArray.getJSONObject(i).optString("AvgRating")));
-                                        listMovieDirector.add(i, (jsonArray.getJSONObject(i).optString("Director")));
                                     }
                                 }
                             }
-
-
-                                mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating,listMovieDirector);
+                                mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating);
                                 recyclerView.setAdapter(mainadapter);
                             progress.setVisibility(View.GONE);
                             mPullToRefresh.setRefreshing(mIsRefreshing = false);
@@ -197,5 +190,51 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
     public static float dpToPixels(int dp, Context context) {
         return dp * (context.getResources().getDisplayMetrics().density);
+    }
+
+    public void loadLeaderboard(){
+
+        String url ="http://jaffareviews.com/api/Movie/GetTopCritics";
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            leaderboardname = new ArrayList<String>();
+                            leaderboardfollowers = new ArrayList<String>();
+                            leaderboardratings = new ArrayList<String>();
+                            leaderboardfbId = new ArrayList<String>();
+
+                                JSONArray jsonArray = response.getJSONArray("critics");
+                            numberofleaders = jsonArray.length();
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    leaderboardname.add(i, (jsonArray.getJSONObject(i).optString("FirstName"))+" "+(jsonArray.getJSONObject(i).optString("LastName")));
+                                    leaderboardfollowers.add(i, (jsonArray.getJSONObject(i).optString("NumOfFollowers")));
+                                    leaderboardratings.add(i, (jsonArray.getJSONObject(i).optString("NumOfRatings")));
+                                    leaderboardfbId.add(i, (jsonArray.getJSONObject(i).optString("fbID")));
+                                }
+                            mFragmentCardAdapter = new CardFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
+                                    dpToPixels(2, getActivity()), numberofleaders, leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId);
+                            mFragmentCardShadowTransformer = new ShadowTransformer(mViewPager, mFragmentCardAdapter);
+                            mFragmentCardShadowTransformer.enableScaling(true);
+                            mViewPager.setAdapter(mFragmentCardAdapter);
+                            mViewPager.setPageTransformer(false, mFragmentCardShadowTransformer);
+                            mViewPager.setOffscreenPageLimit(3);
+
+                        } catch (JSONException e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        VolleySingleton.getInstance().addToRequestQueue(jsonRequest);
     }
 }

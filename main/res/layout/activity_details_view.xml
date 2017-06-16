@@ -66,7 +66,7 @@
                         android:layout_width="150dp"
                         android:layout_height="200dp"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/bb" />
+                        android:src="@drawable/brahmi" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -82,7 +82,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:scaleType="centerInside"
-                            android:src="@drawable/heart"/>
+                            android:src="@drawable/good"/>
 
                         <TextView
                             android:id="@+id/movie_detail_rating"

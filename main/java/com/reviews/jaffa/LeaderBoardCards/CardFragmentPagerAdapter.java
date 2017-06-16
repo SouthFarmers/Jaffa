@@ -14,14 +14,21 @@ public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implemen
 
     private List<CardFragment> mFragments;
     private float mBaseElevation;
+    private List<String> leaderboardname, leaderboardfollowers,leaderboardratings, leaderboardfbId;
+    private int numberofleaders;
 
-    public CardFragmentPagerAdapter(FragmentManager fm, float baseElevation) {
+    public CardFragmentPagerAdapter(FragmentManager fm, float baseElevation, int numberofleaders,List<String>leaderboardname,List<String>leaderboardfollowers,List<String>leaderboardratings,List<String>leaderboardfbId) {
         super(fm);
         mFragments = new ArrayList<>();
         mBaseElevation = baseElevation;
+        this.numberofleaders = numberofleaders;
+        this.leaderboardname = leaderboardname;
+        this.leaderboardfollowers = leaderboardfollowers;
+        this.leaderboardratings = leaderboardratings;
+        this.leaderboardfbId = leaderboardfbId;
 
-        for(int i = 0; i< 5; i++){
-            addCardFragment(new CardFragment());
+        for(int i = 0; i< numberofleaders; i++){
+            addCardFragment(new CardFragment(), leaderboardname.get(i).toString(),leaderboardfollowers.get(i).toString(),leaderboardratings.get(i).toString(),leaderboardfbId.get(i));
         }
     }
 
@@ -52,8 +59,11 @@ public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implemen
         return fragment;
     }
 
-    public void addCardFragment(CardFragment fragment) {
-        mFragments.add(fragment);
+    public void addCardFragment(CardFragment fragment, String leaderboardname, String leaderboardfollowers, String leaderboardratings, String leaderboardfbId) {
+
+        mFragments.add(fragment.newInstance(leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId));
+
+
     }
 
 }

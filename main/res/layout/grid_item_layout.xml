@@ -11,9 +11,10 @@
 
     <ImageView
         android:id="@+id/grid_movie_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="250dp"
+        android:layout_height="172dp"
         android:layout_gravity="center"
+        android:src="@drawable/wide"
         android:scaleType="centerInside"/>
 
     <TextView
@@ -26,16 +27,6 @@
         android:ellipsize="marquee"
         android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/grid_movie_director"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:maxLines="2"
-        android:ellipsize="marquee"
-        android:textSize="16sp" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="30dp"
@@ -47,7 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:scaleType="centerInside"
-            android:src="@drawable/heart"/>
+            android:id="@+id/ratingimage"
+            android:src="@drawable/good"/>
 
         <TextView
             android:id="@+id/grid_movie_rating"
@@ -62,16 +54,5 @@
 
     </LinearLayout>
 
-
-    <!--<android.support.v4.view.ViewPager-->
-        <!--android:id="@+id/viewPager"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="330dp"-->
-        <!--android:clipToPadding="false"-->
-        <!--android:paddingBottom="30dp"-->
-        <!--android:paddingEnd="60dp"-->
-        <!--android:paddingLeft="60dp"-->
-        <!--android:paddingRight="60dp"-->
-        <!--android:paddingStart="60dp" />-->
 
 </LinearLayout>

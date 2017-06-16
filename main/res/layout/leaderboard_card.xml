@@ -23,26 +23,40 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/cardtitle"
                 android:text="Card title" />
 
             <TextView
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Etiam eget ligula eu lectus lobortis condimentum." />
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                android:id="@+id/cardfollowers"
+                android:text="followers" />
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                android:id="@+id/cardreviews"
+                android:text="reviews" />
 
             <Button
                 style="@style/leaderboard_ButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Button" />
+                android:layout_marginTop="20dp"
+                android:id="@+id/cardfollowbutton"
+                android:text="Follow" />
         </LinearLayout>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/cardrank"
             android:layout_gravity="top|start"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"

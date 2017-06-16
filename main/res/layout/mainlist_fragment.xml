@@ -1,26 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-
-
-    <com.mingle.widget.LoadingView
-        android:id="@+id/main_progress"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        app:loadingText="Loading..." />
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <com.cleveroad.pulltorefresh.firework.FireworkyPullToRefreshLayout
         android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/grey"
-        android:id="@+id/main_list"/>
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <com.mingle.widget.LoadingView
+                    android:id="@+id/main_progress"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    app:loadingText="Loading..." />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/main_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/grey" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Top Critics"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textSize="20dp"/>
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/viewPager"
+                    android:background="@color/grey"
+                    android:layout_width="match_parent"
+                    android:layout_height="340dp"
+                    android:layout_gravity="bottom"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:paddingBottom="30dp"
+                    android:paddingEnd="@dimen/review_card_padding"
+                    android:paddingLeft="@dimen/review_card_padding"
+                    android:paddingRight="@dimen/review_card_padding"
+                    android:paddingStart="@dimen/review_card_padding" />
+
+            </LinearLayout>
+        </ScrollView>
     </com.cleveroad.pulltorefresh.firework.FireworkyPullToRefreshLayout>
 </LinearLayout>

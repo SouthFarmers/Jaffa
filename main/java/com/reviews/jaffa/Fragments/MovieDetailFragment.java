@@ -122,11 +122,6 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        SharedPreferences prefs2 = getActivity().getSharedPreferences(friendsIDs, MODE_PRIVATE);
-        frindsIDs = prefs2.getString(friendsIDs, null);
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
-        restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
         if (getArguments() != null) {
             movieName = getArguments().getString(movie_NAME);
         }
@@ -148,6 +143,13 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         frndrevlistView=(ExpandedListView)view.findViewById(R.id.friends_review_list);
         criticrevlistview=(ExpandedListView)view.findViewById(R.id.critic_review_list);
         otherlistview=(ExpandedListView)view.findViewById(R.id.others_review_list);
+
+
+        SharedPreferences prefs2 = getActivity().getSharedPreferences(friendsIDs, MODE_PRIVATE);
+        frindsIDs = prefs2.getString(friendsIDs, null);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
+        restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
 
         return view;
     }
@@ -238,8 +240,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
     public void moviedetailsvolley(){
 //        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName="+movieName+"&fbIds=1468306842,715741731";
-        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds="+frindsIDs+"&UserFbID="+restoreduserid;
-//        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=715741731&UserFbID=1468306842";
+        String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=715741731&UserFbID=1468306842";
  //String url = "http://jaffareviews.com/api/Movie/GetMovie?movieName=manam&fbIds=1468306842,715741731";
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -323,7 +324,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
                                 }
                                 setMovieValues();
-                                setImage(movieImage.replaceAll(" ", "%20"));
+                                setImage(movieImage);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

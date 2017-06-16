@@ -3,39 +3,27 @@ package com.reviews.jaffa.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.mingle.widget.LoadingView;
 import com.reviews.jaffa.Fragments.MovieDetailFragment;
-import com.reviews.jaffa.Helpers.FacebookHelper;
-import com.reviews.jaffa.POJO.ReviewerData;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.Volley.VolleySingleton;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static java.security.AccessController.getContext;
 
 /**
  * Created by GauthamVejandla on 5/28/17.

@@ -2,7 +2,6 @@ package com.reviews.jaffa;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -65,7 +64,7 @@ import static java.security.AccessController.getContext;
  * Created by gautham on 6/2/17.
  */
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends MaterialIntroActivity {
 
     private String firstName,lastName, email;
     private String userId;
