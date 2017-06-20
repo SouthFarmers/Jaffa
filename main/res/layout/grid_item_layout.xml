@@ -1,58 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/grid_color_selector"
+    android:id="@+id/mainlayout"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:foregroundGravity="bottom"
     android:orientation="vertical"
-    android:layout_gravity="center"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp">
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp">
 
-    <ImageView
-        android:id="@+id/grid_movie_image"
-        android:layout_width="250dp"
-        android:layout_height="172dp"
-        android:layout_gravity="center"
-        android:src="@drawable/wide"
-        android:scaleType="centerInside"/>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2">
+
+        <ImageView
+            android:id="@+id/grid_movie_image"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ka" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#bbffffff"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ratingimage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/good" />
+
+                <TextView
+                    android:id="@+id/grid_movie_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:ellipsize="marquee"
+                    android:text="85%"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/grid_movie_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:maxLines="2"
-        android:ellipsize="marquee"
-        android:textSize="18sp" />
-
-    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:scaleType="centerInside"
-            android:id="@+id/ratingimage"
-            android:src="@drawable/good"/>
-
-        <TextView
-            android:id="@+id/grid_movie_rating"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:layout_gravity="center"
-            android:text="85"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
-
-    </LinearLayout>
-
-
+        android:layout_height="wrap_content"
+        android:gravity="bottom|center"
+        android:text="sdasdasdasdXZXasdad"
+        android:background="@color/white"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"/>
 </LinearLayout>
+
