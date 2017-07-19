@@ -15,9 +15,10 @@ public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implemen
     private List<CardFragment> mFragments;
     private float mBaseElevation;
     private List<String> leaderboardname, leaderboardfollowers,leaderboardratings, leaderboardfbId;
+    private List<Boolean> leaderboardisfollowing;
     private int numberofleaders;
 
-    public CardFragmentPagerAdapter(FragmentManager fm, float baseElevation, int numberofleaders,List<String>leaderboardname,List<String>leaderboardfollowers,List<String>leaderboardratings,List<String>leaderboardfbId) {
+    public CardFragmentPagerAdapter(FragmentManager fm, float baseElevation, int numberofleaders,List<String>leaderboardname,List<String>leaderboardfollowers,List<String>leaderboardratings,List<String>leaderboardfbId, List<Boolean> leaderboardisfollowing) {
         super(fm);
         mFragments = new ArrayList<>();
         mBaseElevation = baseElevation;
@@ -26,9 +27,10 @@ public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implemen
         this.leaderboardfollowers = leaderboardfollowers;
         this.leaderboardratings = leaderboardratings;
         this.leaderboardfbId = leaderboardfbId;
+        this.leaderboardisfollowing = leaderboardisfollowing;
 
         for(int i = 0; i< numberofleaders; i++){
-            addCardFragment(new CardFragment(), leaderboardname.get(i).toString(),leaderboardfollowers.get(i).toString(),leaderboardratings.get(i).toString(),leaderboardfbId.get(i));
+            addCardFragment(new CardFragment(), leaderboardname.get(i).toString(),leaderboardfollowers.get(i).toString(),leaderboardratings.get(i).toString(),leaderboardfbId.get(i), leaderboardisfollowing.get(i));
         }
     }
 
@@ -59,9 +61,9 @@ public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implemen
         return fragment;
     }
 
-    public void addCardFragment(CardFragment fragment, String leaderboardname, String leaderboardfollowers, String leaderboardratings, String leaderboardfbId) {
+    public void addCardFragment(CardFragment fragment, String leaderboardname, String leaderboardfollowers, String leaderboardratings, String leaderboardfbId, Boolean leaderboardisfollowing) {
 
-        mFragments.add(fragment.newInstance(leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId));
+        mFragments.add(fragment.newInstance(leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId, leaderboardisfollowing));
 
 
     }

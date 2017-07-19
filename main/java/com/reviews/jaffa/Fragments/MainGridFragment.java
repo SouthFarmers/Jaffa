@@ -1,7 +1,9 @@
 package com.reviews.jaffa.Fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -35,6 +37,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by GauthamVejandla on 4/8/17.
  */
@@ -54,6 +58,8 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     private ShadowTransformer mFragmentCardShadowTransformer;
     private int numberofleaders;
     private static List<String> listMovieTitle, listMovieRating, leaderboardname,leaderboardfollowers,leaderboardratings,leaderboardfbId;
+    private static List<Boolean> leaderboardisfollowing;
+    String restoreduserid;
 
     public static MainGridFragment newInstance() {
         Bundle args = new Bundle();
@@ -104,6 +110,10 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                              ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.mainlist_fragment, container, false);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE);
+        restoreduserid = prefs.getString(getString(R.string.shared_pref_FbID), null);
+
         progress = (LoadingView) rootView.findViewById(R.id.main_progress);
         mPullToRefresh = (FireworkyPullToRefreshLayout) rootView.findViewById(R.id.pullToRefresh);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.main_list);
@@ -156,7 +166,18 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                             }
                                 mainadapter = new GridViewAdapter(getActivity(), listMovieTitle,listMovieRating);
                                 recyclerView.setAdapter(mainadapter);
-                            progress.setVisibility(View.GONE);
+
+                            recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+
+                                @Override
+                                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                                    recyclerView.removeOnLayoutChangeListener(this);
+                                    final Handler handler = new Handler();
+                                    progress.setVisibility(View.GONE);
+                                }
+                            });
+
+                            mainadapter.notifyDataSetChanged();
                             mPullToRefresh.setRefreshing(mIsRefreshing = false);
 
                         } catch (JSONException e) {
@@ -194,7 +215,8 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
     public void loadLeaderboard(){
 
-        String url ="http://jaffareviews.com/api/Movie/GetTopCritics";
+        String url ="http://jaffareviews.com/api/Movie/GetTopCritics?UserFbID=100000636216504";
+        //String url ="http://jaffareviews.com/api/Movie/GetTopCritics?UserFbID="+restoreduserid;
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -205,6 +227,7 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                             leaderboardfollowers = new ArrayList<String>();
                             leaderboardratings = new ArrayList<String>();
                             leaderboardfbId = new ArrayList<String>();
+                            leaderboardisfollowing = new ArrayList<Boolean>();
 
                                 JSONArray jsonArray = response.getJSONArray("critics");
                             numberofleaders = jsonArray.length();
@@ -213,9 +236,10 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                                     leaderboardfollowers.add(i, (jsonArray.getJSONObject(i).optString("NumOfFollowers")));
                                     leaderboardratings.add(i, (jsonArray.getJSONObject(i).optString("NumOfRatings")));
                                     leaderboardfbId.add(i, (jsonArray.getJSONObject(i).optString("fbID")));
+                                    leaderboardisfollowing.add((jsonArray.getJSONObject(i).optBoolean("IsFollowing")));
                                 }
                             mFragmentCardAdapter = new CardFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
-                                    dpToPixels(2, getActivity()), numberofleaders, leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId);
+                                    dpToPixels(2, getActivity()), numberofleaders, leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId, leaderboardisfollowing);
                             mFragmentCardShadowTransformer = new ShadowTransformer(mViewPager, mFragmentCardAdapter);
                             mFragmentCardShadowTransformer.enableScaling(true);
                             mViewPager.setAdapter(mFragmentCardAdapter);

@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -90,13 +91,15 @@ import static android.content.Context.MODE_PRIVATE;
 public class MovieDetailFragment extends Fragment implements View.OnClickListener  {
 
     private static final String movie_NAME = "prop_name";
-    private String movieName, movieDirector,movieRating,movieReleaseDate,movieMusicDirector,movieImage, movieID;
+    private String movieName, movieDirector,movieRating,movieReleaseDate,movieMusicDirector,movieImage, movieID, numberofreviews;
     private OnMovieDetailFragmentListener mListener;
-    TextView movie_name,movie_director,movie_rating, movie_releasedate, movie_musicdirector, movie_title;
+    TextView movie_name,movie_director,movie_rating, movie_releasedate, movie_musicdirector, movie_title,numof_reiews;
     ImageView movie_img;
     private String friendsIDs = "friendsIDs";
     String frindsIDs="";
-    private static List<String> listRevfrnd_fbId,listRevfrnd_rating, listRevfrnd_revtext,listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext,listRevother_fbId,listRevother_rating,listRevother_revtext;
+    private static List<String> listRevfrnd_fbId,listRevfrnd_rating, listRevfrnd_revtext, listRevfrnd_revname,
+                                listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext, listRevcritic_revname,
+                                listRevother_fbId,listRevother_rating,listRevother_revtext, listRevother_revname;
     ExpandedListView frndrevlistView, criticrevlistview,otherlistview;
     static FriendReviewsAdapter frndsrevadapter;
     static CriticReviewsAdapter criticrevadapter;
@@ -138,6 +141,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_title = (TextView) view.findViewById(R.id.movie_title_label);
         movie_director = (TextView) view.findViewById(R.id.movie_detail_director);
         movie_rating = (TextView) view.findViewById(R.id.movie_detail_rating);
+        numof_reiews = (TextView) view.findViewById(R.id.numof_reiews);
         movie_releasedate = (TextView) view.findViewById(R.id.movie_detail_releasedate);
         movie_musicdirector = (TextView) view.findViewById(R.id.movie_detail_mdirector);
         frndrevlistView=(ExpandedListView)view.findViewById(R.id.friends_review_list);
@@ -252,14 +256,17 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                             listRevfrnd_fbId = new ArrayList<String>();
                             listRevfrnd_rating = new ArrayList<String>();
                             listRevfrnd_revtext = new ArrayList<String>();
+                            listRevfrnd_revname = new ArrayList<String>();
 
                             listRevcritic_fbId = new ArrayList<String>();
                             listRevcritic_rating = new ArrayList<String>();
                             listRevcritic_revtext = new ArrayList<String>();
+                            listRevcritic_revname = new ArrayList<String>();
 
                             listRevother_fbId = new ArrayList<String>();
                             listRevother_rating = new ArrayList<String>();
                             listRevother_revtext = new ArrayList<String>();
+                            listRevother_revname = new ArrayList<String>();
 
                             if (response.has("Movie")) {
                                 JSONObject responseObject = response.getJSONObject("Movie");
@@ -274,6 +281,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
 
                                 if (responseObject.has("Reviews")) {
                                     JSONArray jsonArray = responseObject.getJSONArray("Reviews");
+                                    numberofreviews = jsonArray.length()+" Reviews";
 
                                 int j =0,k =0 ,l = 0;
                                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -281,34 +289,37 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                             listRevfrnd_fbId.add(j, (jsonArray.getJSONObject(i).optString("FbID")));
                                             listRevfrnd_rating.add(j, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevfrnd_revtext.add(j, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                            listRevfrnd_revname.add(j, (jsonArray.getJSONObject(i).optString("ReviewerName")));
                                             j++;
                                         }else if(jsonArray.getJSONObject(i).optString("IsFollower").equalsIgnoreCase("true")  && jsonArray.getJSONObject(i).optString("IsCritic").equalsIgnoreCase("true")){
                                             listRevcritic_fbId.add(k, (jsonArray.getJSONObject(i).optString("FbID")));
                                             listRevcritic_rating.add(k, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevcritic_revtext.add(k, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                            listRevcritic_revname.add(k, (jsonArray.getJSONObject(i).optString("ReviewerName")));
                                             k++;
                                         }else if (jsonArray.getJSONObject(i).optString("IsCritic").equalsIgnoreCase("true")){
                                             listRevother_fbId.add(l, (jsonArray.getJSONObject(i).optString("FbID")));
                                             listRevother_rating.add(l, (jsonArray.getJSONObject(i).optString("MovieRating")));
                                             listRevother_revtext.add(l, (jsonArray.getJSONObject(i).optString("MovieReview")));
+                                            listRevother_revname.add(l, (jsonArray.getJSONObject(i).optString("ReviewerName")));
                                             l++;
                                         }
                                     }
                                 }
 
                                 if(listRevfrnd_fbId.size() > 0){
-                                    frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext);
+                                    frndsrevadapter = new FriendReviewsAdapter(getActivity(), listRevfrnd_fbId,listRevfrnd_rating,listRevfrnd_revtext, listRevfrnd_revname);
                                     frndrevlistView.setAdapter(frndsrevadapter);
                                     new Task().execute();
 
                                 }
                                 if(listRevcritic_fbId.size() > 0){
-                                    criticrevadapter = new CriticReviewsAdapter(getActivity(), listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext);
+                                    criticrevadapter = new CriticReviewsAdapter(getActivity(), listRevcritic_fbId,listRevcritic_rating,listRevcritic_revtext, listRevcritic_revname);
                                     criticrevlistview.setAdapter(criticrevadapter);
 
                                 }
                                 if(listRevother_fbId.size() > 0){
-                                    othersrevadapter = new OthersReviewsAdapter(getActivity(), listRevother_fbId,listRevother_rating,listRevother_revtext, restoreduserid);
+                                    othersrevadapter = new OthersReviewsAdapter(getActivity(), listRevother_fbId,listRevother_rating,listRevother_revtext, listRevother_revname, restoreduserid);
                                     otherlistview.setAdapter(othersrevadapter);
 
                                     otherlistview.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -316,7 +327,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                                         @Override
                                         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                                             otherlistview.removeOnLayoutChangeListener(this);
-                                            detailProgress.setVisibility(View.GONE);
+                                            //detailProgress.setVisibility(View.GONE);
                                         }
                                     });
 
@@ -349,19 +360,27 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     }
 
     public void setImage(String url){
-
+        final Handler handler = new Handler();
         ImageRequest imgRequest = new ImageRequest(url,
                 new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap response) {
                         movie_img.setImageBitmap(response);
-                        detailProgress.setVisibility(View.GONE);
-
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                detailProgress.setVisibility(View.GONE);
+                            }
+                        }, 1000);
                     }
                 }, 0, 0, ImageView.ScaleType.FIT_XY, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 movie_img.setBackgroundColor(Color.parseColor("#ff0000"));
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        detailProgress.setVisibility(View.GONE);
+                    }
+                }, 500);
                 error.printStackTrace();
 
             }
@@ -382,6 +401,8 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         movie_director.setText(movieDirector);
         movie_musicdirector.setText(movieMusicDirector);
         movie_rating.setText(movieRating+" %");
+        numof_reiews.setText(numberofreviews);
+
     }
 
 

@@ -41,15 +41,15 @@ public class OthersReviewsAdapter extends BaseAdapter implements View.OnClickLis
     Context mContext;
     private MovieDetailFragment.OnMovieDetailFragmentListener mListener;
     String userFbID;
-    private List<String> listRevother_fbId, listRevother_rating,listRevother_revtext;
-    String access_token = "EAAFkKlScYZAcBAF1TLu9iurW5FO6vJMgKAPabNP603mSdsGPRnOixeKEZB9J4w10fpNCTY%20tOg6Xj4EhEF4X7f67Wpb8wkDKM4uUZCU2oDS6cOfsbXnzNb7lcSPJrjMyk5xzKhn9DjamXpEM%20W180Ha4ZCABCd3yYZD";
+    private List<String> listRevother_fbId, listRevother_rating,listRevother_revtext, listRevother_revname;
 
-    public OthersReviewsAdapter(Context context, List<String> listRevother_fbId, List<String> listRevother_rating, List<String>listRevother_revtext, String restoreduserid) {
+    public OthersReviewsAdapter(Context context, List<String> listRevother_fbId, List<String> listRevother_rating, List<String>listRevother_revtext, List<String>listRevother_revname, String restoreduserid) {
         this.mContext=context;
         this.mContext=context;
         this.listRevother_fbId = listRevother_fbId;
         this.listRevother_rating = listRevother_rating;
         this.listRevother_revtext = listRevother_revtext;
+        this.listRevother_revname = listRevother_revname;
         this.userFbID = restoreduserid;
 
         mListener = (MovieDetailFragment.OnMovieDetailFragmentListener) context;
@@ -108,11 +108,10 @@ public class OthersReviewsAdapter extends BaseAdapter implements View.OnClickLis
                 FollowUser(userFbID,listRevother_fbId.get(position).toString());
             }
         });
-
-        getUserprofile(listRevother_fbId.get(position).toString(), holder);
         setImage("https://graph.facebook.com/"+listRevother_fbId.get(position).toString()+"/picture?type=large&w‌​idth=100&height=150",holder);
 
         holder.revtext.setText(listRevother_revtext.get(position).toString());
+        holder.revName.setText(listRevother_revname.get(position).toString());
         holder.revrating.setRating(Float.parseFloat(listRevother_rating.get(position).toString()));
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,31 +121,6 @@ public class OthersReviewsAdapter extends BaseAdapter implements View.OnClickLis
         });
 
         return rowView;
-    }
-
-
-
-    public void getUserprofile(String fbID, final OthersReviewsAdapter.Holder holder){
-
-        String url = "https://graph.facebook.com/"+fbID+"?access_token="+access_token;
-
-        JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        holder.revName.setText(response.optString("first_name"));
-                       // notifyDataSetChanged();
-                    }
-
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-
-        VolleySingleton.getInstance().addToRequestQueue(jsonRequest);
     }
 
 

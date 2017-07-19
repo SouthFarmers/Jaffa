@@ -28,7 +28,7 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
     private MainGridFragment.OnMainGridFragmentListener mListener;
     private List<String> title, rating,director;
     TextView movie_title, movie_rating;
-    ImageView  ratingimage;
+    ImageView  movie_image,ratingimage;
 
     public GridViewAdapter(Context context,List<String> title,List<String> rating) {
         mContext = context;
@@ -47,7 +47,7 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
         public MyViewHolder(View view) {
             super(view);
             mView = view;
-           // movie_image = (ImageView) view.findViewById(R.id.grid_movie_image);
+            movie_image = (ImageView) view.findViewById(R.id.grid_movie_image);
             movie_title = (TextView) view.findViewById(R.id.grid_movie_title);
             movie_rating = (TextView) view.findViewById(R.id.grid_movie_rating);
             ratingimage = (ImageView) view.findViewById(R.id.ratingimage);
@@ -66,9 +66,9 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.MyView
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
-        //setImage(title.get(position).toString(),movie_image );
+        setImage(title.get(position).toString(),movie_image );
         movie_title.setText(title.get(position).toString());
-        movie_rating.setText(rating.get(position).toString());
+        movie_rating.setText(rating.get(position).toString()+" %");
         if(Integer.parseInt(rating.get(position).toString()) > 60){
             ratingimage.setImageResource(R.drawable.good);
         }else{
