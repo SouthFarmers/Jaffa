@@ -29,6 +29,7 @@ import com.reviews.jaffa.Fragments.SettingsFragment;
 import com.reviews.jaffa.Fragments.SocialShareFragment;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
 import com.reviews.jaffa.Helpers.ImageHelper;
+import com.reviews.jaffa.LeaderBoardCards.CardFragment;
 import com.reviews.jaffa.Volley.VolleySingleton;
 
 //import static com.reviews.jaffa.R.id.gridView;

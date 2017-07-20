@@ -70,6 +70,7 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
 
@@ -94,6 +95,7 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
             throw new RuntimeException(context.toString()
                     + " must implement OnCheeseCategoriesFragmentListener");
         }
+
     }
 
     public interface OnMainGridFragmentListener {
@@ -122,7 +124,7 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
         recyclerView.setLayoutManager(mLayoutManager);
         mViewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
 
-       allMoviesvolley();
+        allMoviesvolley();
         loadLeaderboard();
         return rootView;
     }
@@ -215,8 +217,8 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
 
     public void loadLeaderboard(){
 
-        String url ="http://jaffareviews.com/api/Movie/GetTopCritics?UserFbID=100000636216504";
-        //String url ="http://jaffareviews.com/api/Movie/GetTopCritics?UserFbID="+restoreduserid;
+        //String url ="http://jaffareviews.com/api/Movie/GetTopCritics?UserFbID=100000636216504";
+        String url ="http://jaffareviews.com/api/Movie/GetTopCritics?UserFbID="+restoreduserid;
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -230,16 +232,20 @@ public class MainGridFragment extends Fragment implements View.OnClickListener {
                             leaderboardisfollowing = new ArrayList<Boolean>();
 
                                 JSONArray jsonArray = response.getJSONArray("critics");
-                            numberofleaders = jsonArray.length();
                                 for (int i = 0; i < jsonArray.length(); i++) {
-                                    leaderboardname.add(i, (jsonArray.getJSONObject(i).optString("FirstName"))+" "+(jsonArray.getJSONObject(i).optString("LastName")));
-                                    leaderboardfollowers.add(i, (jsonArray.getJSONObject(i).optString("NumOfFollowers")));
-                                    leaderboardratings.add(i, (jsonArray.getJSONObject(i).optString("NumOfRatings")));
-                                    leaderboardfbId.add(i, (jsonArray.getJSONObject(i).optString("fbID")));
-                                    leaderboardisfollowing.add((jsonArray.getJSONObject(i).optBoolean("IsFollowing")));
+                                    String ds = jsonArray.getJSONObject(i).optString("fbID");
+                                    if(restoreduserid.equalsIgnoreCase(jsonArray.getJSONObject(i).optString("fbID"))) {
+
+                                    }else{
+                                        leaderboardname.add(i, (jsonArray.getJSONObject(i).optString("FirstName")) + " " + (jsonArray.getJSONObject(i).optString("LastName")));
+                                        leaderboardfollowers.add(i, (jsonArray.getJSONObject(i).optString("NumOfFollowers")));
+                                        leaderboardratings.add(i, (jsonArray.getJSONObject(i).optString("NumOfRatings")));
+                                        leaderboardfbId.add(i, (jsonArray.getJSONObject(i).optString("fbID")));
+                                        leaderboardisfollowing.add((jsonArray.getJSONObject(i).optBoolean("IsFollowing")));
+                                    }
                                 }
-                            mFragmentCardAdapter = new CardFragmentPagerAdapter(getActivity().getSupportFragmentManager(),
-                                    dpToPixels(2, getActivity()), numberofleaders, leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId, leaderboardisfollowing);
+                            mFragmentCardAdapter = new CardFragmentPagerAdapter(getChildFragmentManager(),
+                                    dpToPixels(2, getActivity()), leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId, leaderboardisfollowing);
                             mFragmentCardShadowTransformer = new ShadowTransformer(mViewPager, mFragmentCardAdapter);
                             mFragmentCardShadowTransformer.enableScaling(true);
                             mViewPager.setAdapter(mFragmentCardAdapter);

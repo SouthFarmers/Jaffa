@@ -47,7 +47,20 @@ public class CardFragment extends Fragment {
         bundleFeatures.putString("leaderboardfbId", leaderboardfbId);
         bundleFeatures.putBoolean("leaderboardisfollowing", leaderboardisfollowing);
         fragment.setArguments(bundleFeatures);
+
         return fragment;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getArguments() != null) {
+            leaderboardname = getArguments().getString("leaderboardname");
+            leaderboardfollowers = getArguments().getString("leaderboardfollowers");
+            leaderboardratings = getArguments().getString("leaderboardratings");
+            leaderboardfbId = getArguments().getString("leaderboardfbId");
+            leaderboardisfollowing = getArguments().getBoolean("leaderboardisfollowing");
+        }
     }
 
     @Override

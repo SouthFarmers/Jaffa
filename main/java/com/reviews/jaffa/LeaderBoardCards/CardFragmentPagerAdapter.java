@@ -1,14 +1,22 @@
 package com.reviews.jaffa.LeaderBoardCards;
 
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.reviews.jaffa.Fragments.SettingsFragment;
+import com.reviews.jaffa.R;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implements CardAdapter {
 
@@ -16,20 +24,18 @@ public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implemen
     private float mBaseElevation;
     private List<String> leaderboardname, leaderboardfollowers,leaderboardratings, leaderboardfbId;
     private List<Boolean> leaderboardisfollowing;
-    private int numberofleaders;
 
-    public CardFragmentPagerAdapter(FragmentManager fm, float baseElevation, int numberofleaders,List<String>leaderboardname,List<String>leaderboardfollowers,List<String>leaderboardratings,List<String>leaderboardfbId, List<Boolean> leaderboardisfollowing) {
+    public CardFragmentPagerAdapter(FragmentManager fm, float baseElevation,List<String>leaderboardname,List<String>leaderboardfollowers,List<String>leaderboardratings,List<String>leaderboardfbId, List<Boolean> leaderboardisfollowing) {
         super(fm);
         mFragments = new ArrayList<>();
         mBaseElevation = baseElevation;
-        this.numberofleaders = numberofleaders;
         this.leaderboardname = leaderboardname;
         this.leaderboardfollowers = leaderboardfollowers;
         this.leaderboardratings = leaderboardratings;
         this.leaderboardfbId = leaderboardfbId;
         this.leaderboardisfollowing = leaderboardisfollowing;
 
-        for(int i = 0; i< numberofleaders; i++){
+        for(int i = 0; i< leaderboardname.size(); i++){
             addCardFragment(new CardFragment(), leaderboardname.get(i).toString(),leaderboardfollowers.get(i).toString(),leaderboardratings.get(i).toString(),leaderboardfbId.get(i), leaderboardisfollowing.get(i));
         }
     }
@@ -61,7 +67,13 @@ public class CardFragmentPagerAdapter extends FragmentStatePagerAdapter implemen
         return fragment;
     }
 
+    @Override
+    public int getItemPosition(Object object){
+        return PagerAdapter.POSITION_NONE;
+    }
+
     public void addCardFragment(CardFragment fragment, String leaderboardname, String leaderboardfollowers, String leaderboardratings, String leaderboardfbId, Boolean leaderboardisfollowing) {
+
 
         mFragments.add(fragment.newInstance(leaderboardname, leaderboardfollowers, leaderboardratings, leaderboardfbId, leaderboardisfollowing));
 
