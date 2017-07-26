@@ -13,11 +13,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
+import com.facebook.share.widget.ShareDialog;
 import com.reviews.jaffa.Helpers.Shareable;
 import com.reviews.jaffa.R;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by gautham on 6/1/17.
@@ -27,7 +34,7 @@ public class SocialShareFragment extends Fragment implements View.OnClickListene
 
     private OnSocialShareFragmentListener mListener;
     Button fb,twitter,gplus,messages,email,defaultb;
-
+    private ShareDialog shareDialog;
     String message = "Visit Jaffa reviews!";
     String url = "http://jaffareviews.com/";
     Uri pic = Uri.parse("http://jaffareviews.com/Images/Movies/Manam/Movie.jpg");
@@ -122,11 +129,12 @@ public class SocialShareFragment extends Fragment implements View.OnClickListene
     }
 
     public void facebook(View v) {
+
+
         Shareable shareInstance = new Shareable.Builder(getActivity())
                 .message(message)
                 .socialChannel(Shareable.Builder.FACEBOOK)
                 .url(url)
-                .image(pic)
                 .build();
         shareInstance.share();
     }

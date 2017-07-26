@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -196,13 +197,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void setImage(String id){
-        ImageRequest imgRequest = new ImageRequest("https://graph.facebook.com/" + id + "/picture?width=500&height=500",
+        ImageRequest imgRequest = new ImageRequest("https://graph.facebook.com/" + id + "/picture?width=200&height=200",
                 new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap response) {
-                        userpic.setImageBitmap(ImageHelper.getRoundedCornerBitmap(MainActivity.this, response, 250, 200, 200, false, false, false, false));
+                       userpic.setImageBitmap(ImageHelper.getRoundedCornerBitmap(MainActivity.this, response, 250, 200, 200, false, false, false, false));
+
                     }
-                }, 0, 0, ImageView.ScaleType.FIT_XY, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
+                }, 0, 0, ImageView.ScaleType.FIT_CENTER, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 userpic.setBackgroundColor(Color.parseColor("#ff0000"));

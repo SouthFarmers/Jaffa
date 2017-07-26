@@ -38,12 +38,18 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.LoggingBehavior;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.glomadrian.roadrunner.DeterminateRoadRunner;
 import com.reviews.jaffa.Fragments.UserProfileFragment;
 import com.reviews.jaffa.Helpers.CustomOnboardSlide;
+import com.reviews.jaffa.Volley.VolleySingleton;
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,7 +72,7 @@ import static java.security.AccessController.getContext;
 
 public class SplashActivity extends MaterialIntroActivity {
 
-    private String firstName,lastName, email;
+    private String firstName,lastName, email, coverpic;
     private String userId;
     private String TAG = "LoginActivity";
     private CallbackManager callbackManager;
@@ -89,6 +95,12 @@ public class SplashActivity extends MaterialIntroActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         FacebookSdk.setIsDebugEnabled(true);
         FacebookSdk.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .twitterAuthConfig(new TwitterAuthConfig(Constants.TWITTER_CONSUMER_KEY, Constants.TWITTER_CONSUMER_SECRET))
+                .build();
+        Twitter.initialize(config);
+
         intent = new Intent(this, MainActivity.class);
 
         SharedPreferences sharedPrefs = getSharedPreferences(hasSeenTutorial, MODE_PRIVATE);
@@ -186,8 +198,7 @@ public class SplashActivity extends MaterialIntroActivity {
     FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
-            startActivity(intent);
-            finish();
+
             GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                 @Override
                 public void onCompleted(JSONObject object, GraphResponse response) {
@@ -201,11 +212,14 @@ public class SplashActivity extends MaterialIntroActivity {
                             lastName = object.getString("last_name");
                         if(object.has("email"))
                             email = object.getString("email");
+                        if(object.has("cover"))
+                            coverpic = object.getJSONObject("cover").getString("source");
                         getFriends();
                         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.shared_pref_FbID), MODE_PRIVATE).edit();
                         editor.putString(getString(R.string.shared_pref_FbID), userId);
                         editor.putString(getString(R.string.shared_pref_username), firstName+" "+lastName);
                         editor.putString(getString(R.string.shared_pref_email), email);
+                        editor.putString(getString(R.string.shared_pref_coverpic), coverpic);
                         editor.commit();
                         registerUserWithDB();
 
@@ -217,7 +231,7 @@ public class SplashActivity extends MaterialIntroActivity {
                 }
             });
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id, first_name, last_name");
+            parameters.putString("fields", "id, first_name, last_name, email, cover");
             request.setParameters(parameters);
             request.executeAsync();
         }
@@ -278,6 +292,8 @@ public class SplashActivity extends MaterialIntroActivity {
 
     private void registerUserWithDB(){
         Boolean isCritic = false;
+        startActivity(intent);
+        finish();
 
         SharedPreferences prefs = getSharedPreferences(getString(R.string.user_tag), MODE_PRIVATE);
         if(prefs.getString(getString(R.string.shared_pref_FbID), null) == "IsCritic"){

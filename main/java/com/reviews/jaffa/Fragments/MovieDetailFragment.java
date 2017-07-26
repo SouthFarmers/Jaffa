@@ -18,6 +18,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -59,9 +60,17 @@ import com.reviews.jaffa.Adapters.CriticReviewsAdapter;
 import com.reviews.jaffa.Adapters.FriendReviewsAdapter;
 import com.reviews.jaffa.Adapters.OthersReviewsAdapter;
 import com.reviews.jaffa.Helpers.ExpandedListView;
+import com.reviews.jaffa.Helpers.Shareable;
 import com.reviews.jaffa.MainActivity;
 import com.reviews.jaffa.R;
 import com.reviews.jaffa.Volley.VolleySingleton;
+import com.twitter.sdk.android.tweetui.BasicTimelineFilter;
+import com.twitter.sdk.android.tweetui.FilterValues;
+import com.twitter.sdk.android.tweetui.SearchTimeline;
+import com.twitter.sdk.android.tweetui.TimelineFilter;
+import com.twitter.sdk.android.tweetui.TweetTimelineListAdapter;
+import com.willy.ratingbar.BaseRatingBar;
+import com.willy.ratingbar.RotationRatingBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,6 +79,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -83,12 +93,13 @@ import ademar.phasedseekbar.PhasedSeekBar;
 import ademar.phasedseekbar.SimplePhasedAdapter;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.facebook.GraphRequest.TAG;
 
 /**
  * Created by GauthamVejandla on 4/9/17.
  */
 
-public class MovieDetailFragment extends Fragment implements View.OnClickListener  {
+public class MovieDetailFragment extends ListFragment implements View.OnClickListener  {
 
     private static final String movie_NAME = "prop_name";
     private String movieName, movieDirector,movieRating,movieReleaseDate,movieMusicDirector,movieImage, movieID, numberofreviews;
@@ -109,6 +120,12 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
     String restoreduserid;
     protected PhasedSeekBar psbStar;
     private int selectedstar;
+    float rating;
+    RotationRatingBar rotationRatingBar;
+
+    final List<String> handles = Arrays.asList("ericfrohnhoefer", "benward", "vam_si");
+    final FilterValues filterValues = new FilterValues(null, null, handles, null); // or load from JSON, XML, etc
+    final TimelineFilter timelineFilter = new BasicTimelineFilter(filterValues, Locale.ENGLISH);
 
     public MovieDetailFragment() {
     }
@@ -136,6 +153,17 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
             movieName = getArguments().getString(movie_NAME);
         }
         moviedetailsvolley();
+        final SearchTimeline searchTimeline = new SearchTimeline.Builder()
+                .query("#"+movieName.replaceAll("\\s+",""))
+                .resultType(SearchTimeline.ResultType.POPULAR)
+                .languageCode(Locale.ENGLISH.getLanguage())
+                .build();
+        final TweetTimelineListAdapter adapter = new TweetTimelineListAdapter.Builder(getActivity())
+                .setTimeline(searchTimeline)
+                .build();
+        setListAdapter(adapter);
+
+
     }
 
 
@@ -182,6 +210,15 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                     final EditText addreviewText = (EditText) mView.findViewById(R.id.add_review_text);
                     psbStar = (PhasedSeekBar) mView.findViewById(R.id.psb_star);
                     final Resources resources = getResources();
+                    rotationRatingBar = (RotationRatingBar) mView.findViewById(R.id.rotationratingbar_main);
+                    rotationRatingBar.setStarPadding(20);
+                    rotationRatingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
+                    @Override
+                    public void onRatingChange(BaseRatingBar ratingBar, float rating) {
+                        Log.d(TAG, "RotationRatingBar onRatingChange: " + rating);
+                        rating = rating;
+                    }
+                });
                     psbStar.setAdapter(new SimplePhasedAdapter(resources, new int[] {
                             R.drawable.btn_star1_selector,
                             R.drawable.btn_star2_selector,
@@ -202,7 +239,10 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                             .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialogBox, int id) {
                                     // ToDo get user input here
-                                    AddReview(addreviewText.getText().toString(), Integer.parseInt(movieID), Integer.parseInt(restoreduserid), selectedstar);
+
+                                   // AddReview(addreviewText.getText().toString(), Integer.parseInt(movieID), Long.parseLong(restoreduserid), selectedstar);
+                                    Toast.makeText(getActivity(), rating+"",
+                                            Toast.LENGTH_LONG).show();
                                 }
                             })
 
@@ -417,7 +457,7 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         return sdf.format(calendar.getTime());
     }
 
-    public void AddReview(final String text, final int movieID, final int FbID, final float rating){
+    public void AddReview(final String text, final int movieID, final Long FbID, final float rating){
 
         JSONArray jsonArray = new JSONArray();
         JSONObject jsonObject = new JSONObject();
@@ -437,9 +477,13 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
-                        moviedetailsvolley();
+
                         try {
-                            JSONArray arrData = response.getJSONArray("data");
+                            Boolean arrData = response.getBoolean("Data");
+                            if(!arrData){
+                                facebook(text);
+                                //moviedetailsvolley();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -476,6 +520,16 @@ public class MovieDetailFragment extends Fragment implements View.OnClickListene
         protected Boolean doInBackground(String... params) {
             return null;
         }
+    }
+
+    public void facebook(String message) {
+        Uri pic = Uri.parse(movieImage);
+        Shareable shareInstance = new Shareable.Builder(getActivity())
+                .message(message)
+                .socialChannel(Shareable.Builder.FACEBOOK)
+                .image(pic)
+                .build();
+        shareInstance.share();
     }
 
 }
