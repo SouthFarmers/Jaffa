@@ -1,41 +1,26 @@
-<resources>
+<resources xmlns:android="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Jaffa</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="action_settings">Settings</string>
     <string name="menu_add_review">Add review</string>
-
     <string name ="facebook_app_id">391607947649431</string>
-
-        <string name="cancelled">Cancelled</string>
-        <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
-        <string name="ok">OK</string>
-        <string name="hello_user">Hello %1$s!</string>
-        <string name="success">Success</string>
-        <string name="successfully_posted_post">Post ID: %1$s</string>
-        <string name="error">Error</string>
-        <string name="status_update">Updating status for %1$s at %2$s</string>
-        <string name="photo_post">Photo Post</string>
-        <string name="you_picked">You picked:</string>
-        <string name="no_friends_selected">No friends selected</string>
-        <string name="no_place_selected">No place selected</string>
-        <string name="pick_seattle_place">Pick a Seattle Place</string>
-        <string name="app_id">355198514515820</string>
-        <string name="exception">Exception: %1$s</string>
     <string name="shared_pref_FbID">UserFbID</string>
     <string name="user_tag">user_tag</string>
     <string name="shared_pref_username">Username</string>
     <string name="shared_pref_email">Email</string>
-
+    <string name="shared_pref_coverpic">Coverpic</string>
+    <string name="shared_pref_revcount">ReviewsCount</string>
     <string name="critic">Signup as Critic.</string>
     <string name="fan">Signup as Fan.</string>
     <string name="error_message">Please Select an option to continue.</string>
     <string name="Critic_text"><b><i>A Critic </i></b>\n\n\t•Your Reviews are public \n\t•People can follow you \n\t•You rank in leaderboard is public \n\n</string>
     <string name="Fan_text"><b>A Fan </b>\n\n\t•Your Reviews are private, only your friends can view them \n\t•You can follow Critics</string>
-
-
+    <string name="menu_logout">Logout</string>
+    <string name="CONSUMER_KEY">Nae5jzXeoWgX8IhddEQcbecbR</string>
+    <string name="CONSUMER_SECRET">yffF2zLWRdzhLGZ1UxbGr04WkpjygDgEcnP6H4B7TsWIvs8rOg</string>
+    <integer name="roadrunner_original_width">512</integer>
+    <integer name="roadrunner_original_height">512</integer>
 
     <string name="roadrunner">
     M219.423,57.8498 C213.505,57.9958,208.745,60.4148,210.753,63.6298
@@ -135,6 +120,5 @@
     L248.352,83.1358 C244.963,73.1248,235.536,62.1978,227.682,59.1988
     C225.04,58.1898,222.11,57.7818,219.42,57.8478 Z
   </string>
-    <integer name="roadrunner_original_width">512</integer>
-    <integer name="roadrunner_original_height">512</integer>
+
 </resources>
