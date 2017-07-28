@@ -7,14 +7,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.willy.ratingbar.RotationRatingBar
-        android:id="@+id/rotationratingbar_main"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:gravity="center"
-        android:layout_marginTop="16dp"></com.willy.ratingbar.RotationRatingBar>
+
 
     <TextView
         android:id="@+id/dialogTitle"
@@ -41,25 +34,14 @@
         android:visibility="invisible"
         android:stepSize="0.5"/>
 
-    <ademar.phasedseekbar.PhasedSeekBar
-        android:id="@+id/psb_star"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        app:phased_anchor_height="40dp"
-        app:phased_anchor_width="40dp"
-        app:phased_base_background="@drawable/bg_starbar"
-        app:phased_base_margin_bottom="10dp"
-        app:phased_base_margin_left="30dp"
-        app:phased_base_margin_right="30dp"
-        app:phased_base_margin_top="10dp"
-        app:phased_draw_on_off="false"
-        app:phased_fix_point="true"
-        app:phased_item_height="80dp"
-        app:phased_item_width="80dp"
-        app:phased_mode="horizontal"/>
-
+    <com.willy.ratingbar.RotationRatingBar
+        android:id="@+id/rotationratingbar_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="center"
+        android:layout_marginTop="16dp"></com.willy.ratingbar.RotationRatingBar>
 
 
 </LinearLayout>
